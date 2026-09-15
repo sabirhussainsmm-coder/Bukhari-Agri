@@ -17,9 +17,11 @@ import { InquiryTrayModal } from './components/InquiryTrayModal';
 import { SearchModal } from './components/SearchModal';
 import { BackendStudioModal } from './components/BackendStudioModal';
 import { WordPressAuthModal } from './components/WordPressAuthModal';
+import { AdminDashboard } from './components/AdminDashboard';
 import { initialProducts, partnerBrands, contactInfo } from './data/agroData';
 import { Product, ProductCategory, PartnerBrand, SiteSettings } from './types';
 import { MessageCircle, ArrowUp } from 'lucide-react';
+import { fetchProductsFromDb, fetchBrandsFromDb, fetchSiteSettingsFromDb } from './services/supabaseService';
 
 const defaultSiteSettings: SiteSettings = {
   headerButtons: [
@@ -58,6 +60,8 @@ export default function App() {
   const [productCategoryFilter, setProductCategoryFilter] = useState<string>('all');
   const [showScrollTop, setShowScrollTop] = useState(false);
 
+  const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+
   // Admin Authentication (Password: 7467)
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     return localStorage.getItem('bukhari_admin_auth') === '7467';
@@ -65,13 +69,35 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authPendingAction, setAuthPendingAction] = useState<(() => void) | null>(null);
 
-  // 1. Fetch live data from backend API
+  // Check URL for /admin or #admin on startup
+  useEffect(() => {
+    const isDirectAdminRoute = 
+      window.location.pathname === '/admin' || 
+      window.location.pathname.startsWith('/admin') || 
+      window.location.hash === '#admin';
+
+    if (isDirectAdminRoute) {
+      if (isAdmin) {
+        setIsAdminDashboardOpen(true);
+      } else {
+        setAuthPendingAction(() => () => setIsAdminDashboardOpen(true));
+        setIsAuthModalOpen(true);
+      }
+    }
+  }, [isAdmin]);
+
+  // 1. Fetch live data from Supabase & Backend API
   useEffect(() => {
     let isMounted = true;
 
-    // Load Site Settings
+    // Load Site Settings (Supabase -> API -> default)
     async function loadSiteSettings() {
       try {
+        const settings = await fetchSiteSettingsFromDb();
+        if (settings && isMounted) {
+          setSiteSettings(settings);
+          return;
+        }
         const res = await fetch('/api/site-settings');
         if (res.ok) {
           const json = await res.json();
@@ -84,9 +110,14 @@ export default function App() {
       }
     }
 
-    // Load Products
+    // Load Products (Supabase -> API -> local fallback)
     async function loadProducts() {
       try {
+        const dbProducts = await fetchProductsFromDb();
+        if (dbProducts && dbProducts.length > 0 && isMounted) {
+          setProducts(dbProducts);
+          return;
+        }
         const res = await fetch('/api/products');
         if (res.ok) {
           const json = await res.json();
@@ -99,9 +130,14 @@ export default function App() {
       }
     }
 
-    // Load Partner Brands
+    // Load Partner Brands (Supabase -> API -> local fallback)
     async function loadBrands() {
       try {
+        const dbBrands = await fetchBrandsFromDb();
+        if (dbBrands && dbBrands.length > 0 && isMounted) {
+          setBrands(dbBrands);
+          return;
+        }
         const res = await fetch('/api/partners');
         if (res.ok) {
           const json = await res.json();
@@ -176,18 +212,16 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Open Backend Studio with password protection (triggered from Footer "Open Studio Backend Hub")
+  // Open Backend Studio / Admin Dashboard with password protection (triggered from Footer "Open Studio Backend Hub" or /admin route)
   const handleOpenBackendStudio = (tab: 'header' | 'products' | 'brands' | 'images' = 'header') => {
     if (!isAdmin) {
       setAuthPendingAction(() => () => {
-        setStudioInitialTab(tab);
-        setIsBackendStudioOpen(true);
+        setIsAdminDashboardOpen(true);
       });
       setIsAuthModalOpen(true);
       return;
     }
-    setStudioInitialTab(tab);
-    setIsBackendStudioOpen(true);
+    setIsAdminDashboardOpen(true);
   };
 
   // Admin Logout
@@ -336,6 +370,16 @@ export default function App() {
         products={products}
         onSelectProduct={(p) => setSelectedProduct(p)}
       />
+
+      {/* WooCommerce / WordPress Style Admin CMS Dashboard (Supabase PostgreSQL + Storage) */}
+      {isAdminDashboardOpen && (
+        <AdminDashboard
+          onClose={() => setIsAdminDashboardOpen(false)}
+          siteSettings={siteSettings}
+          onSiteSettingsUpdated={(newSettings) => setSiteSettings(newSettings)}
+          onProductsUpdated={(newProducts) => setProducts(newProducts)}
+        />
+      )}
 
       {/* Backend Studio CMS Hub Modal */}
       <BackendStudioModal

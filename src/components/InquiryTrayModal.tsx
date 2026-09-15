@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Trash2, MessageCircle, Send, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Product } from '../types';
+import { submitOrderOrInquiry } from '../services/supabaseService';
 
 interface InquiryTrayModalProps {
   isOpen: boolean;
@@ -110,6 +111,15 @@ export const InquiryTrayModal: React.FC<InquiryTrayModalProps> = ({
               href={whatsAppQuoteUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => {
+                submitOrderOrInquiry({
+                  farmerName: 'WhatsApp Inquiry',
+                  phone: '+92 311 6666600',
+                  location: 'Punjab',
+                  cropType: 'Multi-Product Inquiry',
+                  message: `Quotation requested for: ${inquiryProducts.map(p => p.name).join(', ')}`
+                }, inquiryProducts).catch(() => {});
+              }}
               className="w-full inline-flex items-center justify-center gap-2 bg-[#1B5E20] hover:bg-[#154b1a] text-white font-bold py-3 px-4 rounded-xl text-xs transition-colors shadow-md"
             >
               <MessageCircle className="w-4 h-4 text-emerald-300" />

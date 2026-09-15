@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { contactInfo } from '../data/agroData';
 import { BukhariAgroLogo } from './BukhariAgroLogo';
+import { submitOrderOrInquiry } from '../services/supabaseService';
 
 export const ContactPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -38,20 +39,22 @@ export const ContactPage: React.FC = () => {
 
     setSubmitting(true);
     try {
-      const res = await fetch('/api/inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      const data = await res.json();
-      if (data.success) {
-        setSubmittedId(data.inquiryId || `INQ-${Date.now()}`);
+      // 1. Insert directly into Supabase database
+      const supabaseRes = await submitOrderOrInquiry(formData);
+      if (supabaseRes.success && supabaseRes.orderNumber) {
+        setSubmittedId(supabaseRes.orderNumber);
       } else {
-        setSubmittedId(`INQ-${Date.now()}`);
+        // Fallback to Express backend if hosted together
+        const res = await fetch('/api/inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const data = await res.json();
+        setSubmittedId(data?.inquiryId || `BKA-${Math.floor(100000 + Math.random() * 900000)}`);
       }
     } catch (err) {
-      // Fallback
-      setSubmittedId(`INQ-${Date.now()}`);
+      setSubmittedId(`BKA-${Math.floor(100000 + Math.random() * 900000)}`);
     } finally {
       setSubmitting(false);
     }

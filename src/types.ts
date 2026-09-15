@@ -127,3 +127,52 @@ export interface InquiryFormPayload {
   selectedProducts?: string[];
   message: string;
 }
+
+export interface AdminOrder {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  phone: string;
+  email?: string;
+  location?: string;
+  crop_type?: string;
+  farm_size_acres?: string;
+  preferred_brand?: string;
+  status: 'pending' | 'contacted' | 'processing' | 'completed' | 'cancelled';
+  items: Array<{
+    id: string;
+    name: string;
+    price?: string;
+    quantity?: number;
+    packSize?: string;
+  }>;
+  total_amount?: number;
+  message?: string;
+  admin_notes?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CustomPage {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  meta_title?: string;
+  meta_description?: string;
+  featured_image?: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CategoryRecord {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  icon?: string;
+  accent_color?: string;
+  image_url?: string;
+  order_index?: number;
+}
