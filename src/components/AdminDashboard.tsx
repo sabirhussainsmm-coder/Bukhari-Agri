@@ -24,9 +24,10 @@ import {
   DollarSign, 
   BarChart3, 
   Database,
-  Eye
+  Eye,
+  Users
 } from 'lucide-react';
-import { Product, AdminOrder, CustomPage, CategoryRecord, SiteSettings } from '../types';
+import { Product, AdminOrder, CustomPage, CategoryRecord, SiteSettings, TeamMember } from '../types';
 import { 
   fetchProductsFromDb, 
   saveProductToDb, 
@@ -41,25 +42,32 @@ import {
   deleteCustomPageFromDb,
   uploadMediaToSupabase,
   listMediaFromSupabase,
-  saveSiteSettingsToDb
+  saveSiteSettingsToDb,
+  fetchTeamFromDb
 } from '../services/supabaseService';
 import { getSupabaseCredentials, resetSupabaseClient, testSupabaseConnection } from '../lib/supabase';
+import { AdminTeamManager } from './AdminTeamManager';
+import { AdminPagesEditor } from './AdminPagesEditor';
 
 interface AdminDashboardProps {
   onClose: () => void;
   siteSettings: SiteSettings;
   onSiteSettingsUpdated: (newSettings: SiteSettings) => void;
   onProductsUpdated?: (products: Product[]) => void;
+  teamMembers?: TeamMember[];
+  onTeamUpdated?: (team: TeamMember[]) => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onClose,
   siteSettings,
   onSiteSettingsUpdated,
-  onProductsUpdated
+  onProductsUpdated,
+  teamMembers = [],
+  onTeamUpdated
 }) => {
   // Navigation tabs
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'categories' | 'orders' | 'pages' | 'media' | 'supabase'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'categories' | 'orders' | 'pages' | 'team' | 'media' | 'supabase'>('dashboard');
 
   // Connection status
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
@@ -76,6 +84,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [categories, setCategories] = useState<CategoryRecord[]>([]);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [pages, setPages] = useState<CustomPage[]>([]);
+  const [team, setTeam] = useState<TeamMember[]>(teamMembers);
   const [mediaList, setMediaList] = useState<Array<{ name: string; publicUrl: string; size?: number }>>([]);
   const [loading, setLoading] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
@@ -118,18 +127,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [prods, cats, ords, pgs, media] = await Promise.all([
+      const [prods, cats, ords, pgs, media, teamData] = await Promise.all([
         fetchProductsFromDb(),
         fetchCategoriesFromDb(),
         fetchOrdersFromDb(),
         fetchCustomPagesFromDb(),
-        listMediaFromSupabase('bukhari-media')
+        listMediaFromSupabase('bukhari-media'),
+        fetchTeamFromDb()
       ]);
       setProducts(prods);
       setCategories(cats);
       setOrders(ords);
       setPages(pgs);
       setMediaList(media);
+      if (teamData && teamData.length > 0) {
+        setTeam(teamData);
+        onTeamUpdated?.(teamData);
+      }
       if (onProductsUpdated) {
         onProductsUpdated(prods);
       }
@@ -422,6 +436,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
             <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
               {pages.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('team')}
+            className={`w-full flex items-center justify-between px-4 py-2.5 text-left transition-colors ${
+              activeTab === 'team' ? 'bg-[#2271b1] text-white font-semibold' : 'hover:bg-[#2c3338] hover:text-white'
+            }`}
+            id="admin-nav-team-btn"
+          >
+            <div className="flex items-center gap-3">
+              <Users className="w-4 h-4" />
+              <span>Team & Agronomists</span>
+            </div>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+              {team.length}
             </span>
           </button>
 
@@ -1008,67 +1039,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
         )}
 
-        {/* TAB 5: PAGES / CMS (Page Builder) */}
+        {/* TAB 5: PAGES / CMS (Page by Page Builder) */}
         {activeTab === 'pages' && (
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
-                  <tr>
-                    <th className="p-3">Page Title</th>
-                    <th className="p-3">URL Slug</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3">Last Updated</th>
-                    <th className="p-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {pages.map(pg => (
-                    <tr key={pg.id} className="hover:bg-slate-50/80">
-                      <td className="p-3 font-bold text-slate-900 text-sm">{pg.title}</td>
-                      <td className="p-3 font-mono text-slate-500">/{pg.slug}</td>
-                      <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          pg.is_published ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
-                        }`}>
-                          {pg.is_published ? 'Published' : 'Draft'}
-                        </span>
-                      </td>
-                      <td className="p-3 text-slate-400">
-                        {new Date(pg.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="p-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingPage(pg);
-                              setIsPageModalOpen(true);
-                            }}
-                            className="p-1.5 text-slate-500 hover:text-[#2271b1] hover:bg-blue-50 rounded transition-colors"
-                            title="Edit Page"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeletePage(pg.id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
-                            title="Delete Page"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <AdminPagesEditor
+            siteSettings={siteSettings}
+            onSiteSettingsUpdated={onSiteSettingsUpdated}
+            pages={pages}
+            onPagesUpdated={setPages}
+            onNavigateToTeam={() => setActiveTab('team')}
+            teamMembersCount={team.length}
+            showToast={showToast}
+            onOpenPageModal={(page) => {
+              setEditingPage(page || { title: '', slug: '', content: '', is_published: true });
+              setIsPageModalOpen(true);
+            }}
+          />
         )}
 
-        {/* TAB 6: MEDIA LIBRARY */}
+        {/* TAB 6: TEAM & AGRONOMISTS MANAGER */}
+        {activeTab === 'team' && (
+          <AdminTeamManager
+            teamMembers={team}
+            onTeamUpdated={(updatedTeam) => {
+              setTeam(updatedTeam);
+              onTeamUpdated?.(updatedTeam);
+            }}
+            showToast={showToast}
+          />
+        )}
+
+        {/* TAB 7: MEDIA LIBRARY */}
         {activeTab === 'media' && (
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* Upload Box */}

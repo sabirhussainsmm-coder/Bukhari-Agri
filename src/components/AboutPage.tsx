@@ -14,37 +14,41 @@ import {
 } from 'lucide-react';
 import { TeamMember } from '../types';
 import { initialTeamMembers, partnerBrands } from '../data/agroData';
+import { fetchTeamFromDb } from '../services/supabaseService';
 import { BukhariAgroLogo } from './BukhariAgroLogo';
 
 interface AboutPageProps {
   onNavigateToProducts: () => void;
   onNavigateToContact: () => void;
+  teamMembers?: TeamMember[];
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({
   onNavigateToProducts,
-  onNavigateToContact
+  onNavigateToContact,
+  teamMembers
 }) => {
-  const [team, setTeam] = useState<TeamMember[]>(initialTeamMembers);
+  const [team, setTeam] = useState<TeamMember[]>(teamMembers && teamMembers.length > 0 ? teamMembers : initialTeamMembers);
   const [loadingTeam, setLoadingTeam] = useState(false);
 
-  // Fetch team from backend server endpoint (/api/team)
-  // User explicitly instructed:
-  // "about us men team ka section b ho jin ki images change ki ja sken lekin yad rhy jo b change hoga wo backend pr ho front end pr changing ka koi option na ho"
+  useEffect(() => {
+    if (teamMembers && teamMembers.length > 0) {
+      setTeam(teamMembers);
+    }
+  }, [teamMembers]);
+
+  // Fetch team from Supabase / Backend database
   useEffect(() => {
     let isMounted = true;
     async function loadBackendTeam() {
       setLoadingTeam(true);
       try {
-        const res = await fetch('/api/team');
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && Array.isArray(json.data) && isMounted) {
-            setTeam(json.data);
-          }
+        const data = await fetchTeamFromDb();
+        if (isMounted && data && data.length > 0) {
+          setTeam(data);
         }
       } catch (err) {
-        console.warn("Backend team fetch fallback to initial data", err);
+        console.warn("Backend team fetch fallback", err);
       } finally {
         if (isMounted) setLoadingTeam(false);
       }

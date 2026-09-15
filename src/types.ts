@@ -87,6 +87,14 @@ export interface TeamMember {
   email?: string;
 }
 
+export interface InquiryCartItem {
+  cartItemId: string;
+  productId: string;
+  product: Product;
+  selectedPackSize: string;
+  quantity: number;
+}
+
 export interface CategoryDetail {
   id: ProductCategory;
   title: string;

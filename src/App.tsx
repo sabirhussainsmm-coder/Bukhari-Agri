@@ -15,13 +15,12 @@ import { Footer } from './components/Footer';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { InquiryTrayModal } from './components/InquiryTrayModal';
 import { SearchModal } from './components/SearchModal';
-import { BackendStudioModal } from './components/BackendStudioModal';
 import { WordPressAuthModal } from './components/WordPressAuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
-import { initialProducts, partnerBrands, contactInfo } from './data/agroData';
-import { Product, ProductCategory, PartnerBrand, SiteSettings } from './types';
+import { initialProducts, partnerBrands, contactInfo, initialTeamMembers } from './data/agroData';
+import { Product, ProductCategory, PartnerBrand, SiteSettings, InquiryCartItem, TeamMember } from './types';
 import { MessageCircle, ArrowUp } from 'lucide-react';
-import { fetchProductsFromDb, fetchBrandsFromDb, fetchSiteSettingsFromDb } from './services/supabaseService';
+import { fetchProductsFromDb, fetchBrandsFromDb, fetchSiteSettingsFromDb, fetchTeamFromDb } from './services/supabaseService';
 
 const defaultSiteSettings: SiteSettings = {
   headerButtons: [
@@ -45,18 +44,39 @@ const defaultSiteSettings: SiteSettings = {
   ctaButtonText: 'bukhariagro.com'
 };
 
+function getTabFromPath(pathname: string): 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact' {
+  const clean = pathname.replace(/^\//, '').toLowerCase().split('/')[0];
+  if (clean === 'about' || clean === 'about-us') return 'about';
+  if (clean === 'products' || clean === 'product') return 'products';
+  if (clean === 'categories' || clean === 'category') return 'categories';
+  if (clean === 'brands' || clean === 'brand') return 'brands';
+  if (clean === 'contact' || clean === 'contact-us') return 'contact';
+  return 'home';
+}
+
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact'>('home');
+  const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact'>(() => {
+    return getTabFromPath(window.location.pathname);
+  });
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [brands, setBrands] = useState<PartnerBrand[]>(partnerBrands);
+  const [team, setTeam] = useState<TeamMember[]>(initialTeamMembers);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
   
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [inquiryProductIds, setInquiryProductIds] = useState<string[]>([]);
+  
+  // Inquiry Cart with Pack Size & Quantity support
+  const [inquiryItems, setInquiryItems] = useState<InquiryCartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('bukhari_inquiry_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isInquiryTrayOpen, setIsInquiryTrayOpen] = useState(false);
-  const [isBackendStudioOpen, setIsBackendStudioOpen] = useState(false);
-  const [studioInitialTab, setStudioInitialTab] = useState<'header' | 'products' | 'brands' | 'images'>('header');
   const [productCategoryFilter, setProductCategoryFilter] = useState<string>('all');
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -69,7 +89,29 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authPendingAction, setAuthPendingAction] = useState<(() => void) | null>(null);
 
-  // Check URL for /admin or #admin on startup
+  // Save cart to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('bukhari_inquiry_cart', JSON.stringify(inquiryItems));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [inquiryItems]);
+
+  // Sync document.title with current page tab
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      home: 'Bukhari Agro (Pvt) Ltd - Healthy Crops, Brighter Future',
+      about: 'About Us & Agronomists Team - Bukhari Agro (Pvt) Ltd',
+      products: 'Certified Crop Protection Products - Bukhari Agro',
+      categories: 'Crop Solutions & Categories - Bukhari Agro',
+      brands: 'Partner Agro Brands - Bukhari Agro',
+      contact: 'Contact & Agronomy Helpline - Bukhari Agro'
+    };
+    document.title = titles[currentTab] || 'Bukhari Agro (Pvt) Ltd';
+  }, [currentTab]);
+
+  // Check initial URL for /admin or #admin on startup
   useEffect(() => {
     const isDirectAdminRoute = 
       window.location.pathname === '/admin' || 
@@ -86,11 +128,33 @@ export default function App() {
     }
   }, [isAdmin]);
 
+  // Handle browser Back & Forward buttons (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/admin' || path.startsWith('/admin')) {
+        if (isAdmin) {
+          setIsAdminDashboardOpen(true);
+        } else {
+          setAuthPendingAction(() => () => setIsAdminDashboardOpen(true));
+          setIsAuthModalOpen(true);
+        }
+        return;
+      }
+      setIsAdminDashboardOpen(false);
+      const tab = getTabFromPath(path);
+      setCurrentTab(tab);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isAdmin]);
+
   // 1. Fetch live data from Supabase & Backend API
   useEffect(() => {
     let isMounted = true;
 
-    // Load Site Settings (Supabase -> API -> default)
+    // Load Site Settings
     async function loadSiteSettings() {
       try {
         const settings = await fetchSiteSettingsFromDb();
@@ -110,7 +174,7 @@ export default function App() {
       }
     }
 
-    // Load Products (Supabase -> API -> local fallback)
+    // Load Products
     async function loadProducts() {
       try {
         const dbProducts = await fetchProductsFromDb();
@@ -130,7 +194,7 @@ export default function App() {
       }
     }
 
-    // Load Partner Brands (Supabase -> API -> local fallback)
+    // Load Partner Brands
     async function loadBrands() {
       try {
         const dbBrands = await fetchBrandsFromDb();
@@ -150,9 +214,30 @@ export default function App() {
       }
     }
 
+    // Load Team
+    async function loadTeam() {
+      try {
+        const dbTeam = await fetchTeamFromDb();
+        if (dbTeam && dbTeam.length > 0 && isMounted) {
+          setTeam(dbTeam);
+          return;
+        }
+        const res = await fetch('/api/team');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && isMounted) {
+            setTeam(json.data);
+          }
+        }
+      } catch (err) {
+        console.warn("Using default team dataset", err);
+      }
+    }
+
     loadSiteSettings();
     loadProducts();
     loadBrands();
+    loadTeam();
 
     return () => { isMounted = false; };
   }, []);
@@ -170,67 +255,127 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Scroll to top on tab change
+  // Navigate to tab with browser URL history updates
   const navigateToTab = (tab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact', categoryFilter?: string) => {
     if (categoryFilter) {
       setProductCategoryFilter(categoryFilter);
     }
     setCurrentTab(tab);
+    
+    // Update browser URL (e.g. /about, /products, /contact, /)
+    const targetPath = tab === 'home' ? '/' : `/${tab}`;
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({ tab }, '', targetPath);
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Inquiry toggle
-  const handleToggleInquiry = (product: Product) => {
-    setInquiryProductIds(prev => {
-      if (prev.includes(product.id)) {
-        return prev.filter(id => id !== product.id);
-      } else {
-        return [...prev, product.id];
-      }
-    });
-  };
-
-  const handleRemoveFromInquiry = (productId: string) => {
-    setInquiryProductIds(prev => prev.filter(id => id !== productId));
-  };
-
-  const handleClearInquiry = () => {
-    setInquiryProductIds([]);
-  };
-
-  // When user clicks a category card on Home or Categories page
-  const handleSelectCategoryFromCard = (catId: ProductCategory) => {
-    setProductCategoryFilter(catId);
-    setCurrentTab('products');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // When user clicks "View All Products"
-  const handleViewAllProducts = () => {
-    setProductCategoryFilter('all');
-    setCurrentTab('products');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Open Backend Studio / Admin Dashboard with password protection (triggered from Footer "Open Studio Backend Hub" or /admin route)
-  const handleOpenBackendStudio = (tab: 'header' | 'products' | 'brands' | 'images' = 'header') => {
+  // Open Admin Dashboard with /admin URL sync
+  const handleOpenAdmin = () => {
     if (!isAdmin) {
       setAuthPendingAction(() => () => {
         setIsAdminDashboardOpen(true);
+        if (window.location.pathname !== '/admin') {
+          window.history.pushState({ admin: true }, '', '/admin');
+        }
       });
       setIsAuthModalOpen(true);
       return;
     }
     setIsAdminDashboardOpen(true);
+    if (window.location.pathname !== '/admin') {
+      window.history.pushState({ admin: true }, '', '/admin');
+    }
   };
 
-  // Admin Logout
-  const handleLogout = () => {
-    localStorage.removeItem('bukhari_admin_auth');
-    setIsAdmin(false);
+  // Close Admin Dashboard and restore page URL
+  const handleCloseAdmin = () => {
+    setIsAdminDashboardOpen(false);
+    const targetPath = currentTab === 'home' ? '/' : `/${currentTab}`;
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({ tab: currentTab }, '', targetPath);
+    }
   };
 
-  const inquiryProducts = products.filter(p => inquiryProductIds.includes(p.id));
+  // Inquiry & Pack Size Cart Handlers
+  const handleAddToInquiry = (product: Product, selectedPackSize?: string, quantity: number = 1) => {
+    const packSize = selectedPackSize || (product.packSizes && product.packSizes.length > 0 ? product.packSizes[0] : 'Standard');
+    setInquiryItems(prev => {
+      const existingIndex = prev.findIndex(item => item.product.id === product.id && item.selectedPackSize === packSize);
+      if (existingIndex > -1) {
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: (updated[existingIndex].quantity || 1) + quantity
+        };
+        return updated;
+      } else {
+        const newItem: InquiryCartItem = {
+          cartItemId: `${product.id}-${packSize.replace(/[^a-zA-Z0-9]/g, '')}-${Date.now()}`,
+          productId: product.id,
+          product,
+          selectedPackSize: packSize,
+          quantity: Math.max(1, quantity)
+        };
+        return [...prev, newItem];
+      }
+    });
+  };
+
+  // Quick toggle (for card buttons)
+  const handleToggleInquiry = (product: Product) => {
+    setInquiryItems(prev => {
+      const exists = prev.some(item => item.product.id === product.id);
+      if (exists) {
+        return prev.filter(item => item.product.id !== product.id);
+      } else {
+        const defaultPack = product.packSizes && product.packSizes.length > 0 ? product.packSizes[0] : 'Standard';
+        return [...prev, {
+          cartItemId: `${product.id}-${Date.now()}`,
+          productId: product.id,
+          product,
+          selectedPackSize: defaultPack,
+          quantity: 1
+        }];
+      }
+    });
+  };
+
+  const handleRemoveCartItem = (cartItemId: string) => {
+    setInquiryItems(prev => prev.filter(item => item.cartItemId !== cartItemId));
+  };
+
+  const handleUpdatePackSize = (cartItemId: string, newPackSize: string) => {
+    setInquiryItems(prev => prev.map(item => item.cartItemId === cartItemId ? { ...item, selectedPackSize: newPackSize } : item));
+  };
+
+  const handleUpdateQuantity = (cartItemId: string, newQty: number) => {
+    if (newQty <= 0) {
+      handleRemoveCartItem(cartItemId);
+      return;
+    }
+    setInquiryItems(prev => prev.map(item => item.cartItemId === cartItemId ? { ...item, quantity: newQty } : item));
+  };
+
+  const handleClearInquiry = () => {
+    setInquiryItems([]);
+  };
+
+  // When user clicks a category card on Home or Categories page
+  const handleSelectCategoryFromCard = (catId: ProductCategory) => {
+    setProductCategoryFilter(catId);
+    navigateToTab('products');
+  };
+
+  // When user clicks "View All Products"
+  const handleViewAllProducts = () => {
+    setProductCategoryFilter('all');
+    navigateToTab('products');
+  };
+
+  const inquiryProductIds = inquiryItems.map(i => i.product.id);
+  const totalInquiryUnits = inquiryItems.reduce((acc, i) => acc + (i.quantity || 1), 0);
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-900 selection:bg-emerald-200 selection:text-emerald-950 font-['Plus_Jakarta_Sans',sans-serif]">
@@ -241,7 +386,7 @@ export default function App() {
         onNavigate={navigateToTab}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenInquiryTray={() => setIsInquiryTrayOpen(true)}
-        inquiryCount={inquiryProductIds.length}
+        inquiryCount={totalInquiryUnits}
         siteSettings={siteSettings}
       />
 
@@ -281,10 +426,9 @@ export default function App() {
             {/* 6. Partner Brands Showcase */}
             <PartnerBrandsBar
               brands={brands}
-              onSelectBrand={(brandName) => {
+              onSelectBrand={() => {
                 setProductCategoryFilter('all');
-                setCurrentTab('products');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                navigateToTab('products');
               }}
               onViewAllBrands={() => navigateToTab('brands')}
             />
@@ -295,6 +439,7 @@ export default function App() {
           <AboutPage
             onNavigateToProducts={handleViewAllProducts}
             onNavigateToContact={() => navigateToTab('contact')}
+            teamMembers={team}
           />
         )}
 
@@ -319,10 +464,9 @@ export default function App() {
           <BrandsPage
             brands={brands}
             products={products}
-            onSelectBrandFilter={(brandName) => {
+            onSelectBrandFilter={() => {
               setProductCategoryFilter('all');
-              setCurrentTab('products');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              navigateToTab('products');
             }}
             onSelectProduct={(p) => setSelectedProduct(p)}
             onNavigateToContact={() => navigateToTab('contact')}
@@ -334,28 +478,29 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer (Dynamic brands & backend hub button) */}
+      {/* Footer (Clean, dynamic footer without intrusive studio buttons) */}
       <Footer
         onNavigate={navigateToTab}
         brands={brands}
         siteSettings={siteSettings}
-        onOpenBackendStudio={() => handleOpenBackendStudio('header')}
       />
 
-      {/* Product Detail Modal */}
+      {/* Product Detail Modal (Allows Weight / Pack Size & Quantity selection) */}
       <ProductDetailModal
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
-        onAddToInquiry={handleToggleInquiry}
+        onAddToInquiry={handleAddToInquiry}
         isAddedToInquiry={selectedProduct ? inquiryProductIds.includes(selectedProduct.id) : false}
       />
 
-      {/* Inquiry / Quotation Tray Modal */}
+      {/* Inquiry / Quotation Tray Modal (Displays itemized pack size & quantity controls) */}
       <InquiryTrayModal
         isOpen={isInquiryTrayOpen}
         onClose={() => setIsInquiryTrayOpen(false)}
-        inquiryProducts={inquiryProducts}
-        onRemoveFromInquiry={handleRemoveFromInquiry}
+        inquiryItems={inquiryItems}
+        onRemoveItem={handleRemoveCartItem}
+        onUpdatePackSize={handleUpdatePackSize}
+        onUpdateQuantity={handleUpdateQuantity}
         onClearInquiry={handleClearInquiry}
         onProceedToContact={() => {
           setIsInquiryTrayOpen(false);
@@ -374,26 +519,14 @@ export default function App() {
       {/* WooCommerce / WordPress Style Admin CMS Dashboard (Supabase PostgreSQL + Storage) */}
       {isAdminDashboardOpen && (
         <AdminDashboard
-          onClose={() => setIsAdminDashboardOpen(false)}
+          onClose={handleCloseAdmin}
           siteSettings={siteSettings}
           onSiteSettingsUpdated={(newSettings) => setSiteSettings(newSettings)}
           onProductsUpdated={(newProducts) => setProducts(newProducts)}
+          teamMembers={team}
+          onTeamUpdated={(updatedTeam) => setTeam(updatedTeam)}
         />
       )}
-
-      {/* Backend Studio CMS Hub Modal */}
-      <BackendStudioModal
-        isOpen={isBackendStudioOpen}
-        onClose={() => setIsBackendStudioOpen(false)}
-        siteSettings={siteSettings}
-        products={products}
-        brands={brands}
-        onSettingsUpdated={(newSettings) => setSiteSettings(newSettings)}
-        onProductsUpdated={(newProducts) => setProducts(newProducts)}
-        onBrandsUpdated={(newBrands) => setBrands(newBrands)}
-        initialTab={studioInitialTab}
-        onLogout={handleLogout}
-      />
 
       {/* Password Protection Modal for Backend Access (Password: 7467, strictly no hints) */}
       <WordPressAuthModal

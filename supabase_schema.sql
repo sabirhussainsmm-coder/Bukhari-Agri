@@ -355,7 +355,31 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 -- ==============================================================================
--- 12. SEED DATA - INITIAL CUSTOM PAGES
+-- 12. TABLE: TEAM MEMBERS (About Us Leadership & Agronomists)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.team_members (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    member_key VARCHAR(100) UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
+    department VARCHAR(255) NOT NULL,
+    qualification VARCHAR(255),
+    experience VARCHAR(255),
+    bio TEXT,
+    image_url TEXT,
+    specialty TEXT,
+    email VARCHAR(255),
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read team members" ON public.team_members FOR SELECT USING (true);
+CREATE POLICY "Admin manage team members" ON public.team_members FOR ALL USING (true) WITH CHECK (true);
+
+-- ==============================================================================
+-- 13. SEED DATA - INITIAL CUSTOM PAGES
 -- ==============================================================================
 INSERT INTO public.custom_pages (slug, title, content, meta_title, meta_description, is_published)
 VALUES
@@ -376,3 +400,58 @@ VALUES
   true
 )
 ON CONFLICT (slug) DO NOTHING;
+
+-- ==============================================================================
+-- 14. SEED DATA - INITIAL TEAM MEMBERS
+-- ==============================================================================
+INSERT INTO public.team_members (member_key, name, role, department, qualification, experience, bio, image_url, specialty, sort_order)
+VALUES
+(
+  'syed-bukhari',
+  'Syed Bukhari',
+  'Managing Director & Founder',
+  'Executive Leadership',
+  'M.Sc. Agribusiness & Rural Economy',
+  '18+ Years Experience in Agrochemical Supply Chains',
+  'Visionary agribusiness leader dedicated to connecting Punjab and Sindh farmers with authentic, unadulterated crop protection from the world''s most reputable manufacturers.',
+  '/images/team-director.jpg',
+  'Agri-Enterprise Strategy, Multi-Brand Procurement & Farmer Alliances',
+  1
+),
+(
+  'dr-tariq-mahmood',
+  'Dr. Tariq Mahmood',
+  'Chief Agronomist & Technical Director',
+  'Research & Agronomic Advisory',
+  'Ph.D. in Plant Pathology & Crop Protection',
+  '15+ Years in Field Diagnostics & Resistance Management',
+  'Specializes in fungal epidemiology, pest life-cycle forecasting, and calibrated tank-mix optimization for cotton, wheat, and citrus orchards.',
+  '/images/team-agronomist.jpg',
+  'Crop Diagnostics, Tank-Mix Chemistry & Integrated Pest Management (IPM)',
+  2
+),
+(
+  'engr-muhammad-imran',
+  'Engr. Muhammad Imran',
+  'Head of Supply Chain & Quality Assurance',
+  'Logistics & Regulatory Compliance',
+  'B.Sc. Chemical Engineering, MBA Operations',
+  '12+ Years Multi-brand Warehousing & Quality Verification',
+  'Ensures that every pesticide bottle and fertilizer batch distributed through Bukhari Agro maintains strict batch certification, optimum storage temperature, and genuine tamper-evident sealing.',
+  '/images/team-director.jpg',
+  'Cold Chain Storage, Batch Traceability & Anti-Counterfeit Auditing',
+  3
+),
+(
+  'ch-usman-rafiq',
+  'Ch. Usman Rafiq',
+  'Senior Regional Field Agronomist',
+  'Field Extension & Farmer Outreach',
+  'B.Sc. (Hons) Agronomy, UAF',
+  '10+ Years On-Farm Consultations',
+  'Conducts weekly field seminars, soil sample assessments, and on-farm demonstrations helping progressive and smallholder growers maximize harvest tonnage.',
+  '/images/team-agronomist.jpg',
+  'Wheat Weed Control, Cotton Pink Bollworm Mitigation & Drip Fertigation',
+  4
+)
+ON CONFLICT (member_key) DO NOTHING;

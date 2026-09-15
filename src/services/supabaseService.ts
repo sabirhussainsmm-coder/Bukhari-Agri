@@ -1,6 +1,6 @@
 import { getSupabaseClient } from '../lib/supabase';
-import { Product, SiteSettings, AdminOrder, CustomPage, CategoryRecord, InquiryFormPayload, PartnerBrand } from '../types';
-import { initialProducts, categoriesData, contactInfo, partnerBrands } from '../data/agroData';
+import { Product, SiteSettings, AdminOrder, CustomPage, CategoryRecord, InquiryFormPayload, PartnerBrand, TeamMember } from '../types';
+import { initialProducts, categoriesData, contactInfo, partnerBrands, initialTeamMembers } from '../data/agroData';
 
 export const defaultSiteSettings: SiteSettings = {
   headerButtons: [
@@ -259,17 +259,33 @@ export async function deleteCategoryFromDb(id: string): Promise<{ success: boole
 
 export async function submitOrderOrInquiry(
   payload: InquiryFormPayload,
-  selectedProductObjects: Product[] = []
+  selectedProductObjects: any[] = []
 ): Promise<{ success: boolean; orderNumber: string; error?: string }> {
   const client = getSupabaseClient();
   const orderNumber = `BKA-${Math.floor(100000 + Math.random() * 900000)}`;
 
-  const items = selectedProductObjects.map(p => ({
-    id: p.id,
-    name: p.name,
-    price: p.price,
-    category: p.categoryLabel
-  }));
+  const items = selectedProductObjects.map((item: any) => {
+    // If it's an InquiryCartItem with { product, selectedPackSize, quantity }
+    if (item.product) {
+      return {
+        id: item.product.id || item.productId,
+        name: item.product.name,
+        price: item.product.price,
+        category: item.product.categoryLabel,
+        packSize: item.selectedPackSize || item.packSize || item.product.packSizes?.[0] || 'Standard',
+        quantity: item.quantity || 1
+      };
+    }
+    // Standard Product object fallback
+    return {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      category: item.categoryLabel,
+      packSize: item.selectedPackSize || item.packSize || item.packSizes?.[0] || 'Standard',
+      quantity: item.quantity || 1
+    };
+  });
 
   const orderRecord = {
     order_number: orderNumber,
@@ -666,4 +682,220 @@ export async function deleteBrandFromDb(id: string): Promise<{ success: boolean;
   } catch (err: any) {
     return { success: false, error: err?.message };
   }
+}
+
+// ==========================================
+// 8. TEAM MEMBERS API (Leadership & Agronomists)
+// ==========================================
+
+export async function fetchTeamFromDb(): Promise<TeamMember[]> {
+  const client = getSupabaseClient();
+
+  // Try Supabase first
+  if (client) {
+    try {
+      const { data, error } = await client
+        .from('team_members')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (!error && data && data.length > 0) {
+        return data.map((m: any) => ({
+          id: m.id || m.member_key,
+          name: m.name || 'Team Member',
+          role: m.role || 'Agronomist',
+          department: m.department || 'Technical Division',
+          qualification: m.qualification || '',
+          experience: m.experience || '',
+          bio: m.bio || '',
+          imageUrl: m.image_url || '/images/team-agronomist.jpg',
+          specialty: m.specialty || 'Crop Protection & Advisory',
+          email: m.email || 'bukhariagropvtltd@gmail.com'
+        }));
+      }
+    } catch (err) {
+      console.warn('[Fetch team from Supabase error]:', err);
+    }
+  }
+
+  // Fallback to Express backend /api/team
+  try {
+    const res = await fetch('/api/team');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        return json.data;
+      }
+    }
+  } catch (err) {
+    console.warn('[Fetch team from /api/team error]:', err);
+  }
+
+  // Fallback to localStorage
+  try {
+    const cached = localStorage.getItem('bukhari_team_members');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+
+  // Final fallback to initial team members
+  return initialTeamMembers;
+}
+
+export async function saveTeamMemberToDb(
+  member: Partial<TeamMember>,
+  isEditingId?: string
+): Promise<{ success: boolean; data?: TeamMember; error?: string }> {
+  const client = getSupabaseClient();
+
+  const payload = {
+    name: member.name,
+    role: member.role,
+    department: member.department || 'Agronomy & Advisory',
+    qualification: member.qualification || '',
+    experience: member.experience || '',
+    bio: member.bio || '',
+    image_url: member.imageUrl || '/images/team-agronomist.jpg',
+    specialty: member.specialty || 'Crop Care & Agronomic Solutions',
+    email: member.email || 'bukhariagropvtltd@gmail.com',
+    updated_at: new Date().toISOString()
+  };
+
+  let savedMember: TeamMember | null = null;
+
+  // 1. Save to Supabase if connected
+  if (client) {
+    try {
+      if (isEditingId) {
+        const { data, error } = await client
+          .from('team_members')
+          .update(payload)
+          .eq('id', isEditingId)
+          .select()
+          .maybeSingle();
+
+        if (error) {
+          console.warn('[Supabase update team error]:', error.message);
+        } else if (data) {
+          savedMember = {
+            id: data.id,
+            name: data.name,
+            role: data.role,
+            department: data.department,
+            qualification: data.qualification,
+            experience: data.experience,
+            bio: data.bio,
+            imageUrl: data.image_url,
+            specialty: data.specialty,
+            email: data.email
+          };
+        }
+      } else {
+        const { data, error } = await client
+          .from('team_members')
+          .insert([{
+            ...payload,
+            member_key: member.name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || `member-${Date.now()}`,
+            created_at: new Date().toISOString()
+          }])
+          .select()
+          .maybeSingle();
+
+        if (error) {
+          console.warn('[Supabase insert team error]:', error.message);
+        } else if (data) {
+          savedMember = {
+            id: data.id,
+            name: data.name,
+            role: data.role,
+            department: data.department,
+            qualification: data.qualification,
+            experience: data.experience,
+            bio: data.bio,
+            imageUrl: data.image_url,
+            specialty: data.specialty,
+            email: data.email
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('[Supabase save team error]:', e);
+    }
+  }
+
+  // 2. Also sync to Express backend /api/team
+  try {
+    if (isEditingId) {
+      await fetch(`/api/team/${isEditingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(member)
+      });
+    } else {
+      await fetch('/api/team', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(member)
+      });
+    }
+  } catch (err) {
+    console.warn('[Sync to /api/team error]:', err);
+  }
+
+  // 3. Cache to localStorage
+  try {
+    const currentTeam = await fetchTeamFromDb();
+    let updatedTeam: TeamMember[];
+    if (isEditingId) {
+      updatedTeam = currentTeam.map(m => m.id === isEditingId ? { ...m, ...member } as TeamMember : m);
+    } else {
+      const newMember: TeamMember = savedMember || {
+        id: member.id || `member-${Date.now()}`,
+        name: member.name || 'New Member',
+        role: member.role || 'Agronomist',
+        department: member.department || 'Technical Division',
+        qualification: member.qualification || '',
+        experience: member.experience || '',
+        bio: member.bio || '',
+        imageUrl: member.imageUrl || '/images/team-agronomist.jpg',
+        specialty: member.specialty || '',
+        email: member.email || 'bukhariagropvtltd@gmail.com'
+      };
+      updatedTeam = [...currentTeam, newMember];
+    }
+    localStorage.setItem('bukhari_team_members', JSON.stringify(updatedTeam));
+    return { success: true, data: savedMember || undefined };
+  } catch (err: any) {
+    return { success: true };
+  }
+}
+
+export async function deleteTeamMemberFromDb(id: string): Promise<{ success: boolean; error?: string }> {
+  const client = getSupabaseClient();
+
+  if (client) {
+    try {
+      await client.from('team_members').delete().eq('id', id);
+    } catch (err) {
+      console.warn('[Supabase delete team member error]:', err);
+    }
+  }
+
+  try {
+    await fetch(`/api/team/${id}`, { method: 'DELETE' });
+  } catch (err) {
+    console.warn('API delete team error:', err);
+  }
+
+  try {
+    const currentTeam = await fetchTeamFromDb();
+    const updated = currentTeam.filter(m => m.id !== id);
+    localStorage.setItem('bukhari_team_members', JSON.stringify(updated));
+  } catch {}
+
+  return { success: true };
 }

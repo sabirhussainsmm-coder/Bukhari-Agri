@@ -421,13 +421,51 @@ async function startServer() {
     }
   });
 
-  // 5. Team API (Controlled exclusively from the backend)
+  // 5. Team API (Controlled centrally from backend and CMS)
   app.get('/api/team', (req, res) => {
     res.json({
       success: true,
       data: serverTeamStore,
       backendManagedNotice: "Team members and imagery are controlled centrally via Bukhari Agro backend infrastructure."
     });
+  });
+
+  app.post('/api/team', (req, res) => {
+    try {
+      const member = req.body;
+      const newMember: TeamMember = {
+        id: member.id || `team-${Date.now()}`,
+        name: member.name || 'New Team Member',
+        role: member.role || 'Agronomist',
+        department: member.department || 'Agronomy & Advisory',
+        qualification: member.qualification || '',
+        experience: member.experience || '',
+        bio: member.bio || '',
+        imageUrl: member.imageUrl || '/images/team-agronomist.jpg',
+        specialty: member.specialty || '',
+        email: member.email || 'bukhariagropvtltd@gmail.com'
+      };
+      serverTeamStore.push(newMember);
+      res.status(201).json({ success: true, data: newMember });
+    } catch (err) {
+      res.status(500).json({ success: false, error: 'Failed to add team member' });
+    }
+  });
+
+  app.put('/api/team/:id', (req, res) => {
+    const { id } = req.params;
+    const index = serverTeamStore.findIndex(m => m.id === id);
+    if (index === -1) {
+      return res.status(404).json({ success: false, error: 'Member not found' });
+    }
+    serverTeamStore[index] = { ...serverTeamStore[index], ...req.body, id };
+    res.json({ success: true, data: serverTeamStore[index] });
+  });
+
+  app.delete('/api/team/:id', (req, res) => {
+    const { id } = req.params;
+    serverTeamStore = serverTeamStore.filter(m => m.id !== id);
+    res.json({ success: true, message: 'Member deleted' });
   });
 
   // 6. Categories API

@@ -7,8 +7,7 @@ import {
   MessageCircle, 
   ArrowRight, 
   Globe, 
-  ShieldCheck,
-  Sliders
+  ShieldCheck
 } from 'lucide-react';
 import { BukhariAgroLogo } from './BukhariAgroLogo';
 import { contactInfo, partnerBrands as defaultBrands } from '../data/agroData';
@@ -100,19 +99,6 @@ export const Footer: React.FC<FooterProps> = ({
               <ShieldCheck className="w-4 h-4" />
               <span>100% Genuine Seals & Formulation Purity</span>
             </div>
-
-            {onOpenBackendStudio && (
-              <div className="pt-2">
-                <button
-                  onClick={onOpenBackendStudio}
-                  className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-emerald-300 border border-slate-800 transition-colors"
-                  id="footer-studio-hub-btn"
-                >
-                  <Sliders className="w-3.5 h-3.5" />
-                  <span>Open Studio Backend Hub</span>
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Quick Navigation (Cols 5-6) */}
@@ -241,20 +227,6 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="mt-12 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex flex-wrap items-center gap-3">
             <span>© {new Date().getFullYear()} Bukhari Agro (Pvt) Ltd. All rights reserved.</span>
-            {onOpenBackendStudio && (
-              <>
-                <span className="hidden sm:inline">•</span>
-                <button
-                  type="button"
-                  onClick={onOpenBackendStudio}
-                  className="text-slate-500 hover:text-emerald-400 font-medium transition-colors inline-flex items-center gap-1 hover:underline cursor-pointer"
-                  id="footer-open-studio-btn"
-                >
-                  <Sliders className="w-3 h-3" />
-                  <span>Open Studio Backend Hub</span>
-                </button>
-              </>
-            )}
           </div>
 
           <div className="flex items-center gap-4 text-emerald-400 font-medium">
