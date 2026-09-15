@@ -1,0 +1,7 @@
+{
+  "name": "Bukhari Agro",
+  "description": "Bukhari Agro (Pvt) Ltd - Multi-brand distributor of premier pesticides, fertilizers, herbicides, fungicides, and complete crop care solutions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
