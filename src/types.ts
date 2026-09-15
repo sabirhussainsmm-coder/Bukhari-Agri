@@ -46,13 +46,69 @@ export interface PartnerBrand {
 export interface HeaderNavButton {
   id: string;
   label: string;
-  targetTab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact' | 'studio';
+  targetTab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'plantation' | 'machinery' | 'contact' | 'studio';
   categoryFilter?: string;
   hasDropdown?: boolean;
   visible: boolean;
   isCustom?: boolean;
   customUrl?: string;
   badgeText?: string;
+}
+
+export type PlantCategory = 'fruit' | 'forestry' | 'medicinal' | 'ornamental';
+
+export interface PlantItem {
+  id: string;
+  name: string;
+  urduName: string;
+  scientificName?: string;
+  category: PlantCategory;
+  categoryLabel: string;
+  price: number;
+  formattedPrice: string;
+  unit: string;
+  bulkPrice?: string;
+  originalPrice?: string;
+  heightOrAge: string;
+  fruitingTime: string;
+  bestSeason: string;
+  survivalRate: string;
+  watering: string;
+  sunlight: string;
+  soilType: string;
+  tagline: string;
+  shortDescription: string;
+  fullDescription: string;
+  features: string[];
+  imageUrl: string;
+  inStock: boolean;
+  featured?: boolean;
+}
+
+export type MachineCategory = 'sprayers' | 'tillage' | 'seeding' | 'harvesting' | 'irrigation' | 'drones';
+
+export interface AgriMachine {
+  id: string;
+  name: string;
+  urduName: string;
+  category: MachineCategory;
+  categoryLabel: string;
+  price: number;
+  formattedPrice: string;
+  originalPrice?: string;
+  powerSource: string;
+  capacityOrSize: string;
+  warranty: string;
+  brand: string;
+  tagline: string;
+  shortDescription: string;
+  fullDescription: string;
+  specifications: Record<string, string>;
+  keyFeatures: string[];
+  suitableFor: string[];
+  imageUrl: string;
+  inStock: boolean;
+  featured?: boolean;
 }
 
 export interface SiteSettings {

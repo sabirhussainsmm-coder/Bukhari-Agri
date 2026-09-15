@@ -11,6 +11,12 @@ import { ProductsPage } from './components/ProductsPage';
 import { CategoriesPage } from './components/CategoriesPage';
 import { BrandsPage } from './components/BrandsPage';
 import { ContactPage } from './components/ContactPage';
+import { PlantationSection } from './components/PlantationSection';
+import { AgriMachinerySection } from './components/AgriMachinerySection';
+import { PlantationPage } from './components/PlantationPage';
+import { AgriMachineryPage } from './components/AgriMachineryPage';
+import { PlantDetailModal } from './components/PlantDetailModal';
+import { MachineDetailModal } from './components/MachineDetailModal';
 import { Footer } from './components/Footer';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { InquiryTrayModal } from './components/InquiryTrayModal';
@@ -18,17 +24,20 @@ import { SearchModal } from './components/SearchModal';
 import { WordPressAuthModal } from './components/WordPressAuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
 import { initialProducts, partnerBrands, contactInfo, initialTeamMembers } from './data/agroData';
-import { Product, ProductCategory, PartnerBrand, SiteSettings, InquiryCartItem, TeamMember } from './types';
+import { initialPlants, initialAgriMachines } from './data/plantationAndMachineryData';
+import { Product, ProductCategory, PartnerBrand, SiteSettings, InquiryCartItem, TeamMember, PlantItem, AgriMachine } from './types';
 import { MessageCircle, ArrowUp } from 'lucide-react';
 import { fetchProductsFromDb, fetchBrandsFromDb, fetchSiteSettingsFromDb, fetchTeamFromDb } from './services/supabaseService';
 
 const defaultSiteSettings: SiteSettings = {
   headerButtons: [
     { id: 'btn-home', label: 'Home', targetTab: 'home', visible: true, hasDropdown: false },
-    { id: 'btn-about', label: 'About Us', targetTab: 'about', visible: true, hasDropdown: false },
     { id: 'btn-products', label: 'Products', targetTab: 'products', visible: true, hasDropdown: false },
     { id: 'btn-categories', label: 'Categories', targetTab: 'categories', visible: true, hasDropdown: true },
+    { id: 'btn-plantation', label: 'Plantation & Nursery', targetTab: 'plantation', visible: true, hasDropdown: false, badgeText: 'New' },
+    { id: 'btn-machinery', label: 'Agri Machines', targetTab: 'machinery', visible: true, hasDropdown: false, badgeText: 'New' },
     { id: 'btn-brands', label: 'Agro Brands', targetTab: 'brands', visible: true, hasDropdown: false },
+    { id: 'btn-about', label: 'About Us', targetTab: 'about', visible: true, hasDropdown: false },
     { id: 'btn-contact', label: 'Contact', targetTab: 'contact', visible: true, hasDropdown: false }
   ],
   logo: {
@@ -44,26 +53,34 @@ const defaultSiteSettings: SiteSettings = {
   ctaButtonText: 'bukhariagro.com'
 };
 
-function getTabFromPath(pathname: string): 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact' {
+type AppTab = 'home' | 'about' | 'products' | 'categories' | 'brands' | 'plantation' | 'machinery' | 'contact';
+
+function getTabFromPath(pathname: string): AppTab {
   const clean = pathname.replace(/^\//, '').toLowerCase().split('/')[0];
   if (clean === 'about' || clean === 'about-us') return 'about';
   if (clean === 'products' || clean === 'product') return 'products';
   if (clean === 'categories' || clean === 'category') return 'categories';
+  if (clean === 'plantation' || clean === 'plants' || clean === 'nursery') return 'plantation';
+  if (clean === 'machinery' || clean === 'machines' || clean === 'agri-machines') return 'machinery';
   if (clean === 'brands' || clean === 'brand') return 'brands';
   if (clean === 'contact' || clean === 'contact-us') return 'contact';
   return 'home';
 }
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact'>(() => {
+  const [currentTab, setCurrentTab] = useState<AppTab>(() => {
     return getTabFromPath(window.location.pathname);
   });
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [brands, setBrands] = useState<PartnerBrand[]>(partnerBrands);
   const [team, setTeam] = useState<TeamMember[]>(initialTeamMembers);
+  const [plants, setPlants] = useState<PlantItem[]>(initialPlants);
+  const [agriMachines, setAgriMachines] = useState<AgriMachine[]>(initialAgriMachines);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
   
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedPlant, setSelectedPlant] = useState<PlantItem | null>(null);
+  const [selectedMachine, setSelectedMachine] = useState<AgriMachine | null>(null);
   
   // Inquiry Cart with Pack Size & Quantity support
   const [inquiryItems, setInquiryItems] = useState<InquiryCartItem[]>(() => {
@@ -105,6 +122,8 @@ export default function App() {
       about: 'About Us & Agronomists Team - Bukhari Agro (Pvt) Ltd',
       products: 'Certified Crop Protection Products - Bukhari Agro',
       categories: 'Crop Solutions & Categories - Bukhari Agro',
+      plantation: 'Certified Nursery & Plantation - Bukhari Agro (Pvt) Ltd',
+      machinery: 'Modern Farm Machinery & Sprayers - Bukhari Agro',
       brands: 'Partner Agro Brands - Bukhari Agro',
       contact: 'Contact & Agronomy Helpline - Bukhari Agro'
     };
@@ -256,13 +275,13 @@ export default function App() {
   }, []);
 
   // Navigate to tab with browser URL history updates
-  const navigateToTab = (tab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact', categoryFilter?: string) => {
+  const navigateToTab = (tab: AppTab, categoryFilter?: string) => {
     if (categoryFilter) {
       setProductCategoryFilter(categoryFilter);
     }
     setCurrentTab(tab);
     
-    // Update browser URL (e.g. /about, /products, /contact, /)
+    // Update browser URL (e.g. /about, /products, /plantation, /machinery, /contact, /)
     const targetPath = tab === 'home' ? '/' : `/${tab}`;
     if (window.location.pathname !== targetPath) {
       window.history.pushState({ tab }, '', targetPath);
@@ -342,6 +361,60 @@ export default function App() {
     });
   };
 
+  // Add Plant Item to Inquiry Cart with transparent unit price & specs
+  const handleAddPlantToInquiry = (plant: PlantItem, quantity: number = 10) => {
+    const pseudoProduct: Product = {
+      id: plant.id,
+      name: `${plant.name} (${plant.urduName})`,
+      company: 'Bukhari Nursery (نرسری فارم)',
+      category: 'growth-regulators',
+      categoryLabel: plant.categoryLabel,
+      price: plant.formattedPrice,
+      originalPrice: plant.originalPrice,
+      tagline: plant.tagline,
+      shortDescription: plant.shortDescription,
+      fullDescription: plant.fullDescription,
+      activeIngredient: plant.scientificName || 'Certified Nursery Rootstock',
+      formulation: plant.heightOrAge,
+      targetCrops: ['Fruit Orchards', 'Farm Boundaries', 'Commercial Forestation'],
+      targetPestsOrRole: plant.features || [],
+      packSizes: [plant.heightOrAge, 'Bulk (100+ Plants)'],
+      dosage: `${plant.soilType} • ${plant.watering}`,
+      applicationMethod: 'Planting in prepared pits with well-rotted manure',
+      precautions: ['Water thoroughly after planting', 'Keep root-ball intact'],
+      imageUrl: plant.imageUrl,
+      inStock: plant.inStock
+    };
+    handleAddToInquiry(pseudoProduct, `${plant.formattedPrice} • ${plant.heightOrAge}`, quantity);
+  };
+
+  // Add Agri Machine to Inquiry Cart
+  const handleAddMachineToInquiry = (mach: AgriMachine, quantity: number = 1) => {
+    const pseudoProduct: Product = {
+      id: mach.id,
+      name: `${mach.name} (${mach.urduName})`,
+      company: `${mach.brand} (${mach.categoryLabel})`,
+      category: 'growth-regulators',
+      categoryLabel: mach.categoryLabel,
+      price: mach.formattedPrice,
+      originalPrice: mach.originalPrice,
+      tagline: mach.tagline,
+      shortDescription: mach.shortDescription,
+      fullDescription: mach.fullDescription,
+      activeIngredient: mach.powerSource,
+      formulation: mach.capacityOrSize,
+      targetCrops: mach.suitableFor || ['All Crops & Farms'],
+      targetPestsOrRole: mach.keyFeatures || [],
+      packSizes: [mach.capacityOrSize, 'Standard Unit'],
+      dosage: mach.warranty,
+      applicationMethod: 'Mechanical farm equipment operation',
+      precautions: [mach.warranty, 'Wear protective equipment when operating'],
+      imageUrl: mach.imageUrl,
+      inStock: mach.inStock
+    };
+    handleAddToInquiry(pseudoProduct, `${mach.formattedPrice} • ${mach.capacityOrSize}`, quantity);
+  };
+
   const handleRemoveCartItem = (cartItemId: string) => {
     setInquiryItems(prev => prev.filter(item => item.cartItemId !== cartItemId));
   };
@@ -403,10 +476,12 @@ export default function App() {
             {/* 2. Value Proposition Pillars Bar (Deep Green: 4 Pillars) */}
             <ValuePropositionBar />
 
-            {/* 3. Our Products / Complete Crop Care Solutions (5 Categories Grid) */}
+            {/* 3. Our Products / Complete Crop Care Solutions (5 Categories Grid + New Division Cards) */}
             <CategoryCards
               onSelectCategory={handleSelectCategoryFromCard}
               onViewAllProducts={handleViewAllProducts}
+              onNavigateToPlantation={() => navigateToTab('plantation')}
+              onNavigateToMachinery={() => navigateToTab('machinery')}
             />
 
             {/* 4. About Bukhari Agro / Growing Agriculture Together */}
@@ -414,7 +489,7 @@ export default function App() {
               onLearnMore={() => navigateToTab('about')}
             />
 
-            {/* 5. Featured Products Section */}
+            {/* 5. Featured Agrochemical Products */}
             <FeaturedProductsSection
               products={products}
               onSelectProduct={(p) => setSelectedProduct(p)}
@@ -423,7 +498,23 @@ export default function App() {
               inquiryProductIds={inquiryProductIds}
             />
 
-            {/* 6. Partner Brands Showcase */}
+            {/* 6. Plantation & Nursery Division (Kinnow, Mango, Guava, Olive & Forest Plants with Prices) */}
+            <PlantationSection
+              plants={plants}
+              onSelectPlant={(plant) => setSelectedPlant(plant)}
+              onViewAll={() => navigateToTab('plantation')}
+              onAddPlantToInquiry={handleAddPlantToInquiry}
+            />
+
+            {/* 7. Agri Machinery & Modern Farm Equipment (Sprayers, Tillers, Implements) */}
+            <AgriMachinerySection
+              machines={agriMachines}
+              onSelectMachine={(machine) => setSelectedMachine(machine)}
+              onViewAll={() => navigateToTab('machinery')}
+              onAddMachineToInquiry={handleAddMachineToInquiry}
+            />
+
+            {/* 8. Partner Brands Showcase */}
             <PartnerBrandsBar
               brands={brands}
               onSelectBrand={() => {
@@ -457,6 +548,28 @@ export default function App() {
         {currentTab === 'categories' && (
           <CategoriesPage
             onSelectCategoryFilter={handleSelectCategoryFromCard}
+            onNavigateToPlantation={() => navigateToTab('plantation')}
+            onNavigateToMachinery={() => navigateToTab('machinery')}
+          />
+        )}
+
+        {currentTab === 'plantation' && (
+          <PlantationPage
+            plants={plants}
+            onSelectPlant={(plant) => setSelectedPlant(plant)}
+            onAddPlantToInquiry={handleAddPlantToInquiry}
+            onOpenInquiryTray={() => setIsInquiryTrayOpen(true)}
+            inquiryCount={totalInquiryUnits}
+          />
+        )}
+
+        {currentTab === 'machinery' && (
+          <AgriMachineryPage
+            machines={agriMachines}
+            onSelectMachine={(machine) => setSelectedMachine(machine)}
+            onAddMachineToInquiry={handleAddMachineToInquiry}
+            onOpenInquiryTray={() => setIsInquiryTrayOpen(true)}
+            inquiryCount={totalInquiryUnits}
           />
         )}
 
@@ -494,6 +607,28 @@ export default function App() {
         isAddedToInquiry={selectedProduct ? inquiryProductIds.includes(selectedProduct.id) : false}
       />
 
+      {/* Plant Detail Modal (Nursery saplings with pricing, fruit yield time, planting density) */}
+      <PlantDetailModal
+        plant={selectedPlant}
+        onClose={() => setSelectedPlant(null)}
+        onAddToInquiry={(plant, qty) => {
+          handleAddPlantToInquiry(plant, qty);
+          setIsInquiryTrayOpen(true);
+        }}
+        isAddedToInquiry={selectedPlant ? inquiryProductIds.includes(selectedPlant.id) : false}
+      />
+
+      {/* Agri Machine Detail Modal (Modern equipment with technical specs, motor, warranty) */}
+      <MachineDetailModal
+        machine={selectedMachine}
+        onClose={() => setSelectedMachine(null)}
+        onAddToInquiry={(machine, qty) => {
+          handleAddMachineToInquiry(machine, qty);
+          setIsInquiryTrayOpen(true);
+        }}
+        isAddedToInquiry={selectedMachine ? inquiryProductIds.includes(selectedMachine.id) : false}
+      />
+
       {/* Inquiry / Quotation Tray Modal (Displays itemized pack size & quantity controls) */}
       <InquiryTrayModal
         isOpen={isInquiryTrayOpen}
@@ -509,12 +644,16 @@ export default function App() {
         }}
       />
 
-      {/* Quick Search Modal */}
+      {/* Quick Search Modal with Plants & Machinery Support */}
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         products={products}
+        plants={plants}
+        machines={agriMachines}
         onSelectProduct={(p) => setSelectedProduct(p)}
+        onSelectPlant={(plant) => setSelectedPlant(plant)}
+        onSelectMachine={(mach) => setSelectedMachine(mach)}
       />
 
       {/* WooCommerce / WordPress Style Admin CMS Dashboard (Supabase PostgreSQL + Storage) */}

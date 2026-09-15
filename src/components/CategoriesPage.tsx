@@ -11,16 +11,24 @@ import {
   Calendar, 
   AlertTriangle,
   Layers,
-  Droplets
+  Droplets,
+  TreePine,
+  Tractor
 } from 'lucide-react';
 import { categoriesData } from '../data/agroData';
 import { ProductCategory } from '../types';
 
 interface CategoriesPageProps {
   onSelectCategoryFilter: (category: ProductCategory) => void;
+  onNavigateToPlantation?: () => void;
+  onNavigateToMachinery?: () => void;
 }
 
-export const CategoriesPage: React.FC<CategoriesPageProps> = ({ onSelectCategoryFilter }) => {
+export const CategoriesPage: React.FC<CategoriesPageProps> = ({ 
+  onSelectCategoryFilter,
+  onNavigateToPlantation,
+  onNavigateToMachinery
+}) => {
   const [activeCategoryTab, setActiveCategoryTab] = useState<ProductCategory>('pesticides');
 
   const iconMap: Record<string, React.ElementType> = {
@@ -187,6 +195,61 @@ export const CategoriesPage: React.FC<CategoriesPageProps> = ({ onSelectCategory
 
           </div>
         </div>
+
+        {/* Explore Other Divisions (Plantation & Agri Machinery) */}
+        {(onNavigateToPlantation || onNavigateToMachinery) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+            {onNavigateToPlantation && (
+              <div 
+                onClick={onNavigateToPlantation}
+                className="bg-white rounded-2xl p-6 border border-emerald-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-800 shrink-0">
+                    <TreePine className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Certified Nursery</span>
+                    <h4 className="text-base font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                      Plantation & Fruit Orchards (پودے)
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Grafted Kinnow, Mango, Thai Guava, Olive & Safeda with prices.
+                    </p>
+                  </div>
+                </div>
+                <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            )}
+
+            {onNavigateToMachinery && (
+              <div 
+                onClick={onNavigateToMachinery}
+                className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-amber-400 shrink-0">
+                    <Tractor className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Farm Equipment</span>
+                    <h4 className="text-base font-extrabold text-white group-hover:text-amber-300 transition-colors">
+                      Agri Machinery & Sprayers (زرعی مشینیں)
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Battery knapsack sprayers, engine power sprayers, rotavators & drones.
+                    </p>
+                  </div>
+                </div>
+                <div className="w-9 h-9 rounded-full bg-slate-800 text-amber-400 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Agronomic Seasons Calendar (Kharif vs Rabi Guidance) */}
         <div className="bg-gradient-to-r from-emerald-950 to-[#0A4D2E] rounded-3xl p-6 sm:p-10 text-white shadow-xl">

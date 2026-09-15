@@ -15,7 +15,7 @@ import { contactInfo, partnerBrands as defaultBrands } from '../data/agroData';
 import { PartnerBrand, SiteSettings } from '../types';
 
 interface FooterProps {
-  onNavigate: (tab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact') => void;
+  onNavigate: (tab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'plantation' | 'machinery' | 'contact') => void;
   brands?: PartnerBrand[];
   siteSettings?: SiteSettings;
   onOpenBackendStudio?: () => void;
@@ -141,6 +141,18 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button onClick={() => onNavigate('categories')} className="hover:text-emerald-400 transition-colors">
                   Crop Categories
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('plantation')} className="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                  <span>Plantation & Nursery</span>
+                  <span className="text-[10px] bg-emerald-900 text-emerald-300 px-1.5 py-0.5 rounded-sm font-semibold">New</span>
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('machinery')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                  <span>Agri Machinery</span>
+                  <span className="text-[10px] bg-amber-950 text-amber-300 px-1.5 py-0.5 rounded-sm font-semibold">New</span>
                 </button>
               </li>
               <li>

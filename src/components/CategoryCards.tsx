@@ -1,15 +1,19 @@
 import React from 'react';
-import { ArrowRight, Bug, Sprout, Leaf, ShieldAlert, Zap, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, Bug, Sprout, Leaf, ShieldAlert, Zap, TreePine, Tractor, Sparkles } from 'lucide-react';
 import { ProductCategory } from '../types';
 
 interface CategoryCardsProps {
   onSelectCategory: (categoryId: ProductCategory) => void;
   onViewAllProducts: () => void;
+  onNavigateToPlantation?: () => void;
+  onNavigateToMachinery?: () => void;
 }
 
 export const CategoryCards: React.FC<CategoryCardsProps> = ({
   onSelectCategory,
-  onViewAllProducts
+  onViewAllProducts,
+  onNavigateToPlantation,
+  onNavigateToMachinery
 }) => {
   const cards = [
     {
@@ -56,25 +60,25 @@ export const CategoryCards: React.FC<CategoryCardsProps> = ({
 
   return (
     <section className="py-16 sm:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Section Header (Matching image.png) */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div>
             <div className="text-xs sm:text-sm font-bold tracking-wider text-emerald-800 uppercase mb-2">
-              OUR PRODUCTS
+              OUR PRODUCTS & DIVISIONS
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Complete <span className="text-[#16A34A]">Crop Care</span> Solutions
+              Complete <span className="text-[#16A34A]">Crop Care & Farm</span> Solutions
             </h2>
             <p className="text-slate-600 mt-2 text-base">
-              From soil to harvest, we have everything your crops need.
+              From soil nutrition and pest control to certified nursery saplings and modern farm machinery.
             </p>
           </div>
 
           <button
             onClick={onViewAllProducts}
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-800 hover:text-emerald-950 transition-colors group shrink-0"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-800 hover:text-emerald-950 transition-colors group shrink-0 cursor-pointer"
             id="category-view-all-products-btn"
           >
             <span>View All Products</span>
@@ -82,7 +86,7 @@ export const CategoryCards: React.FC<CategoryCardsProps> = ({
           </button>
         </div>
 
-        {/* 5-Column Category Cards Grid (as in image.png) */}
+        {/* 5-Column Category Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
           {cards.map((card) => {
             const Icon = card.icon;
@@ -110,7 +114,7 @@ export const CategoryCards: React.FC<CategoryCardsProps> = ({
                   </p>
                 </div>
 
-                {/* Round green arrow button at bottom (as in image.png) */}
+                {/* Round green arrow button at bottom */}
                 <div className="mt-6 flex justify-center">
                   <div className="w-9 h-9 rounded-full bg-emerald-600 group-hover:bg-[#1B5E20] text-white flex items-center justify-center transition-colors shadow-xs">
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -121,7 +125,77 @@ export const CategoryCards: React.FC<CategoryCardsProps> = ({
           })}
         </div>
 
+        {/* New Dedicated Divisions Showcase (Plantation & Agri Machinery) */}
+        {(onNavigateToPlantation || onNavigateToMachinery) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4">
+            
+            {/* Plantation & Nursery Card */}
+            {onNavigateToPlantation && (
+              <div
+                onClick={onNavigateToPlantation}
+                className="group bg-linear-to-br from-emerald-900 to-emerald-950 text-white rounded-2xl p-6 sm:p-7 border border-emerald-800 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
+                id="category-banner-plantation"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-800/80 border border-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <TreePine className="w-7 h-7 text-emerald-300" />
+                  </div>
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 uppercase tracking-wider mb-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Certified Nursery Division • نرسری و باغات</span>
+                    </div>
+                    <h3 className="text-xl font-black text-white group-hover:text-emerald-200 transition-colors">
+                      Fruit Orchards & Forestry Trees
+                    </h3>
+                    <p className="text-xs sm:text-sm text-emerald-100/80 mt-1 max-w-md leading-relaxed">
+                      Kinnow, Mango, Thai Guava, Olive, and Safeda saplings with clear prices and 98% survival guarantee.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-emerald-500 text-white flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </div>
+            )}
+
+            {/* Agri Machinery Card */}
+            {onNavigateToMachinery && (
+              <div
+                onClick={onNavigateToMachinery}
+                className="group bg-linear-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-6 sm:p-7 border border-slate-800 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
+                id="category-banner-machinery"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Tractor className="w-7 h-7 text-amber-400" />
+                  </div>
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Farm Machinery Division • جدید زرعی مشینیں</span>
+                    </div>
+                    <h3 className="text-xl font-black text-white group-hover:text-amber-300 transition-colors">
+                      Modern Agricultural Equipment & Implements
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-md leading-relaxed">
+                      Battery knapsack sprayers, engine power sprayers, rotavators, seed drills, and agricultural spray drones.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-amber-500 text-white group-hover:text-slate-950 flex items-center justify-center shrink-0 transition-colors shadow-xs">
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+
       </div>
     </section>
   );
 };
+

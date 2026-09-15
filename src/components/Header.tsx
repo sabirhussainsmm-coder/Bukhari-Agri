@@ -14,9 +14,9 @@ import { BukhariAgroLogo } from './BukhariAgroLogo';
 import { SiteSettings } from '../types';
 
 interface HeaderProps {
-  currentTab?: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact';
-  activeTab?: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact';
-  onNavigate: (tab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'contact', categoryFilter?: string) => void;
+  currentTab?: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'plantation' | 'machinery' | 'contact';
+  activeTab?: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'plantation' | 'machinery' | 'contact';
+  onNavigate: (tab: 'home' | 'about' | 'products' | 'categories' | 'brands' | 'plantation' | 'machinery' | 'contact', categoryFilter?: string) => void;
   inquiryCount: number;
   onOpenInquiryTray: () => void;
   onOpenSearch: () => void;
@@ -40,22 +40,26 @@ export const Header: React.FC<HeaderProps> = ({
   // Fallback buttons if siteSettings not loaded yet
   const defaultButtons = [
     { id: 'btn-home', label: 'Home', targetTab: 'home' as const, visible: true, hasDropdown: false },
-    { id: 'btn-about', label: 'About Us', targetTab: 'about' as const, visible: true, hasDropdown: false },
     { id: 'btn-products', label: 'Products', targetTab: 'products' as const, visible: true, hasDropdown: false },
     { id: 'btn-categories', label: 'Categories', targetTab: 'categories' as const, visible: true, hasDropdown: true },
+    { id: 'btn-plantation', label: 'Plantation & Nursery', targetTab: 'plantation' as const, visible: true, hasDropdown: false, badgeText: 'New' },
+    { id: 'btn-machinery', label: 'Agri Machines', targetTab: 'machinery' as const, visible: true, hasDropdown: false, badgeText: 'New' },
     { id: 'btn-brands', label: 'Agro Brands', targetTab: 'brands' as const, visible: true, hasDropdown: false },
+    { id: 'btn-about', label: 'About Us', targetTab: 'about' as const, visible: true, hasDropdown: false },
     { id: 'btn-contact', label: 'Contact', targetTab: 'contact' as const, visible: true, hasDropdown: false }
   ];
 
   const navButtons = (siteSettings?.headerButtons || defaultButtons).filter(b => b.visible !== false);
 
   const quickCategories = [
-    { id: 'pesticides', label: 'Pesticides' },
-    { id: 'fertilizers', label: 'Fertilizers' },
-    { id: 'herbicides', label: 'Herbicides' },
-    { id: 'fungicides', label: 'Fungicides' },
-    { id: 'growth-regulators', label: 'Plant Growth Regulators' },
-    { id: 'micronutrients', label: 'Micronutrients' },
+    { id: 'pesticides', label: 'Pesticides', tab: 'categories' as const },
+    { id: 'fertilizers', label: 'Fertilizers', tab: 'categories' as const },
+    { id: 'herbicides', label: 'Herbicides', tab: 'categories' as const },
+    { id: 'fungicides', label: 'Fungicides', tab: 'categories' as const },
+    { id: 'growth-regulators', label: 'Plant Growth Regulators', tab: 'categories' as const },
+    { id: 'micronutrients', label: 'Micronutrients', tab: 'categories' as const },
+    { id: 'plantation-quick', label: 'Plantation & Nursery (پودے و باغات)', tab: 'plantation' as const },
+    { id: 'machinery-quick', label: 'Agri Machinery & Sprayers (زرعی مشینیں)', tab: 'machinery' as const },
   ];
 
   const helpline = siteSettings?.helplinePhone || '+92 311 6666600';
@@ -176,7 +180,11 @@ export const Header: React.FC<HeaderProps> = ({
                             key={cat.id}
                             onClick={() => {
                               setCategoriesDropdownOpen(false);
-                              onNavigate('categories', cat.id);
+                              if (cat.tab === 'plantation' || cat.tab === 'machinery') {
+                                onNavigate(cat.tab);
+                              } else {
+                                onNavigate('categories', cat.id);
+                              }
                             }}
                             className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center justify-between transition-colors"
                           >
@@ -194,14 +202,19 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   key={link.id}
                   onClick={() => onNavigate(link.targetTab)}
-                  className={`relative px-2.5 lg:px-3.5 py-1.5 lg:py-2 rounded-lg text-xs lg:text-[15px] font-medium transition-all ${
+                  className={`relative px-2.5 lg:px-3.5 py-1.5 lg:py-2 rounded-lg text-xs lg:text-[15px] font-medium transition-all flex items-center gap-1.5 ${
                     isLinkActive
                       ? 'text-emerald-800 font-semibold bg-emerald-50'
                       : 'text-gray-700 hover:text-emerald-700 hover:bg-gray-50'
                   }`}
                   id={`nav-link-${link.targetTab}`}
                 >
-                  {link.label}
+                  <span>{link.label}</span>
+                  {link.badgeText && (
+                    <span className="text-[9px] uppercase font-bold bg-amber-400 text-slate-950 px-1.5 py-0.5 rounded-full leading-none">
+                      {link.badgeText}
+                    </span>
+                  )}
                   {isLinkActive && (
                     <span className="absolute bottom-1 left-2.5 right-2.5 h-0.5 bg-emerald-600 rounded-full" />
                   )}
