@@ -478,11 +478,12 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer (Clean, dynamic footer without intrusive studio buttons) */}
+      {/* Footer (Dynamic brands & studio backend hub button) */}
       <Footer
         onNavigate={navigateToTab}
         brands={brands}
         siteSettings={siteSettings}
+        onOpenBackendStudio={handleOpenAdmin}
       />
 
       {/* Product Detail Modal (Allows Weight / Pack Size & Quantity selection) */}

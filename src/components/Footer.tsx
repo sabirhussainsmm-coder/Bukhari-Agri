@@ -7,7 +7,8 @@ import {
   MessageCircle, 
   ArrowRight, 
   Globe, 
-  ShieldCheck
+  ShieldCheck,
+  Sliders
 } from 'lucide-react';
 import { BukhariAgroLogo } from './BukhariAgroLogo';
 import { contactInfo, partnerBrands as defaultBrands } from '../data/agroData';
@@ -99,6 +100,21 @@ export const Footer: React.FC<FooterProps> = ({
               <ShieldCheck className="w-4 h-4" />
               <span>100% Genuine Seals & Formulation Purity</span>
             </div>
+
+            {onOpenBackendStudio && (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={onOpenBackendStudio}
+                  className="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-emerald-500/40 transition-all shadow-xs cursor-pointer group"
+                  id="footer-studio-hub-btn"
+                  title="Open Studio Backend Hub & CMS"
+                >
+                  <Sliders className="w-3.5 h-3.5 text-emerald-400 group-hover:rotate-45 transition-transform duration-300" />
+                  <span>Open Studio Backend Hub</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quick Navigation (Cols 5-6) */}
@@ -227,6 +243,21 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="mt-12 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex flex-wrap items-center gap-3">
             <span>© {new Date().getFullYear()} Bukhari Agro (Pvt) Ltd. All rights reserved.</span>
+            {onOpenBackendStudio && (
+              <>
+                <span className="hidden sm:inline text-slate-700">•</span>
+                <button
+                  type="button"
+                  onClick={onOpenBackendStudio}
+                  className="text-slate-400 hover:text-emerald-400 font-medium transition-colors inline-flex items-center gap-1.5 hover:underline cursor-pointer"
+                  id="footer-open-studio-bottom-btn"
+                  title="Open Studio Backend Hub"
+                >
+                  <Sliders className="w-3 h-3 text-emerald-400" />
+                  <span>Open Studio Backend Hub</span>
+                </button>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-4 text-emerald-400 font-medium">
