@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Plus, Check, MessageCircle, ExternalLink, Image as ImageIcon } from 'lucide-react';
+import { ArrowRight, Plus, Check, MessageCircle, ExternalLink } from 'lucide-react';
 import { Product } from '../types';
 
 interface FeaturedProductsSectionProps {
@@ -8,8 +8,6 @@ interface FeaturedProductsSectionProps {
   onViewAll: () => void;
   onAddToInquiry: (product: Product) => void;
   inquiryProductIds: string[];
-  isAdmin?: boolean;
-  onChangeProductImage?: (product: Product) => void;
 }
 
 export const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
@@ -17,9 +15,7 @@ export const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = (
   onSelectProduct,
   onViewAll,
   onAddToInquiry,
-  inquiryProductIds,
-  isAdmin,
-  onChangeProductImage
+  inquiryProductIds
 }) => {
   const featured = products.filter(p => p.featured).slice(0, 4);
 
@@ -87,22 +83,6 @@ export const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = (
                       }}
                     />
                     <div className="absolute inset-0 bg-emerald-900/0 group-hover/img:bg-emerald-900/5 transition-colors" />
-
-                    {/* WordPress-style Quick Image Editor */}
-                    {isAdmin && onChangeProductImage && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onChangeProductImage(product);
-                        }}
-                        className="absolute top-2 right-2 z-10 px-2 py-1 bg-[#2271b1] hover:bg-[#135e96] text-white text-[10px] font-bold rounded shadow-md flex items-center gap-1 opacity-90 hover:opacity-100 transition-all"
-                        title="Change Image via WordPress Media Library"
-                      >
-                        <ImageIcon className="w-3 h-3" />
-                        <span>Change Image</span>
-                      </button>
-                    )}
                   </div>
 
                   {/* Title */}

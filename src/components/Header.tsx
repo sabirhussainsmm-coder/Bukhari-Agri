@@ -8,8 +8,7 @@ import {
   X, 
   ChevronDown, 
   MessageCircle,
-  ShieldCheck,
-  Sliders
+  ShieldCheck
 } from 'lucide-react';
 import { BukhariAgroLogo } from './BukhariAgroLogo';
 import { SiteSettings } from '../types';
@@ -22,9 +21,6 @@ interface HeaderProps {
   onOpenInquiryTray: () => void;
   onOpenSearch: () => void;
   siteSettings?: SiteSettings;
-  onOpenBackendStudio?: () => void;
-  isAdmin?: boolean;
-  onChangeLogo?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -34,10 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   inquiryCount,
   onOpenInquiryTray,
   onOpenSearch,
-  siteSettings,
-  onOpenBackendStudio,
-  isAdmin,
-  onChangeLogo
+  siteSettings
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
@@ -99,19 +92,6 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-3 ml-auto text-[11px]">
-            {/* Backend Studio Hub Trigger */}
-            {onOpenBackendStudio && (
-              <button
-                onClick={onOpenBackendStudio}
-                className="inline-flex items-center gap-1 bg-emerald-800/80 hover:bg-emerald-700 text-emerald-100 hover:text-white px-2.5 py-0.5 rounded-full transition-colors font-medium border border-emerald-700/60"
-                id="header-open-studio-btn"
-                title="Manage header, logo, products & brands directly on backend"
-              >
-                <Sliders className="w-3 h-3 text-emerald-300" />
-                <span>Backend Studio Hub</span>
-              </button>
-            )}
-
             <a
               href={`https://wa.me/${(siteSettings?.whatsappNumber || helpline).replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Assalam-o-Alaikum Bukhari Agro, I would like to inquire about agricultural products.')}`}
               target="_blank"
@@ -157,20 +137,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <BukhariAgroLogo variant="horizontal" size="md" />
               )}
             </button>
-
-            {/* WordPress-style Change Logo button when Admin is active */}
-            {isAdmin && onChangeLogo && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onChangeLogo();
-                }}
-                className="ml-2 px-2 py-1 bg-[#2271b1] hover:bg-[#135e96] text-white text-[10px] font-bold rounded shadow-xs transition-opacity opacity-80 hover:opacity-100 inline-flex items-center gap-1"
-                title="Change Logo using Media Library"
-              >
-                <span>Edit Logo</span>
-              </button>
-            )}
           </div>
 
           {/* Desktop Navigation Links (Configured via Backend - Visible from md: 768px+) */}
@@ -335,18 +301,6 @@ export const Header: React.FC<HeaderProps> = ({
               {link.label}
             </button>
           ))}
-
-          {onOpenBackendStudio && (
-            <button
-              onClick={() => {
-                onOpenBackendStudio();
-                setMobileMenuOpen(false);
-              }}
-              className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-emerald-800 bg-emerald-50"
-            >
-              ⚙️ Studio Backend Hub
-            </button>
-          )}
 
           <div className="pt-4 border-t border-emerald-100 flex flex-col gap-2">
             <a

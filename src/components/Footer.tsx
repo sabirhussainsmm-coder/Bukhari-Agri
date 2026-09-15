@@ -239,8 +239,22 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom Sub-footer */}
         <div className="mt-12 pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <span>© {new Date().getFullYear()} Bukhari Agro (Pvt) Ltd. All rights reserved.</span>
+            {onOpenBackendStudio && (
+              <>
+                <span className="hidden sm:inline">•</span>
+                <button
+                  type="button"
+                  onClick={onOpenBackendStudio}
+                  className="text-slate-500 hover:text-emerald-400 font-medium transition-colors inline-flex items-center gap-1 hover:underline cursor-pointer"
+                  id="footer-open-studio-btn"
+                >
+                  <Sliders className="w-3 h-3" />
+                  <span>Open Studio Backend Hub</span>
+                </button>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-4 text-emerald-400 font-medium">

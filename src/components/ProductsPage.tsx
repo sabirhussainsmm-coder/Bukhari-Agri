@@ -9,8 +9,7 @@ import {
   RotateCcw, 
   CheckCircle2, 
   Info,
-  Sparkles,
-  Image as ImageIcon
+  Sparkles
 } from 'lucide-react';
 import { Product, ProductCategory } from '../types';
 
@@ -21,8 +20,6 @@ interface ProductsPageProps {
   onAddToInquiry: (product: Product) => void;
   inquiryProductIds: string[];
   onOpenInquiryTray: () => void;
-  isAdmin?: boolean;
-  onChangeProductImage?: (product: Product) => void;
 }
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({
@@ -31,9 +28,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   onSelectProduct,
   onAddToInquiry,
   inquiryProductIds,
-  onOpenInquiryTray,
-  isAdmin,
-  onChangeProductImage
+  onOpenInquiryTray
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter || 'all');
@@ -274,22 +269,6 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         }}
                       />
                       <div className="absolute inset-0 bg-emerald-950/0 group-hover/img:bg-emerald-950/5 transition-colors" />
-
-                      {/* WordPress-style Quick Image Editor */}
-                      {isAdmin && onChangeProductImage && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onChangeProductImage(product);
-                          }}
-                          className="absolute top-2 right-2 z-10 px-2 py-1 bg-[#2271b1] hover:bg-[#135e96] text-white text-[10px] font-bold rounded shadow-md flex items-center gap-1 opacity-90 hover:opacity-100 transition-all"
-                          title="Change Image via WordPress Media Library"
-                        >
-                          <ImageIcon className="w-3 h-3" />
-                          <span>Change Image</span>
-                        </button>
-                      )}
 
                       <div className="absolute bottom-2 right-2 opacity-0 group-hover/img:opacity-100 transition-opacity bg-white/90 text-[10px] font-bold text-emerald-800 px-2 py-0.5 rounded-md shadow-xs">
                         Click for Specs

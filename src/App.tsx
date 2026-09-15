@@ -16,9 +16,7 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { InquiryTrayModal } from './components/InquiryTrayModal';
 import { SearchModal } from './components/SearchModal';
 import { BackendStudioModal } from './components/BackendStudioModal';
-import { WordPressAdminBar } from './components/WordPressAdminBar';
 import { WordPressAuthModal } from './components/WordPressAuthModal';
-import { MediaLibraryModal } from './components/MediaLibraryModal';
 import { initialProducts, partnerBrands, contactInfo } from './data/agroData';
 import { Product, ProductCategory, PartnerBrand, SiteSettings } from './types';
 import { MessageCircle, ArrowUp } from 'lucide-react';
@@ -60,17 +58,12 @@ export default function App() {
   const [productCategoryFilter, setProductCategoryFilter] = useState<string>('all');
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // WordPress-like Admin Authentication (Password: 7467)
+  // Admin Authentication (Password: 7467)
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     return localStorage.getItem('bukhari_admin_auth') === '7467';
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authPendingAction, setAuthPendingAction] = useState<(() => void) | null>(null);
-
-  // WordPress Media Library Modal Integration
-  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
-  const [mediaTargetProduct, setMediaTargetProduct] = useState<Product | null>(null);
-  const [isEditingLogo, setIsEditingLogo] = useState(false);
 
   // 1. Fetch live data from backend API
   useEffect(() => {
@@ -183,7 +176,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Open Backend Studio with password protection
+  // Open Backend Studio with password protection (triggered from Footer "Open Studio Backend Hub")
   const handleOpenBackendStudio = (tab: 'header' | 'products' | 'brands' | 'images' = 'header') => {
     if (!isAdmin) {
       setAuthPendingAction(() => () => {
@@ -197,84 +190,6 @@ export default function App() {
     setIsBackendStudioOpen(true);
   };
 
-  // WordPress quick image editor trigger on product
-  const handleChangeProductImage = (product: Product) => {
-    if (!isAdmin) {
-      setAuthPendingAction(() => () => {
-        setMediaTargetProduct(product);
-        setIsEditingLogo(false);
-        setIsMediaModalOpen(true);
-      });
-      setIsAuthModalOpen(true);
-      return;
-    }
-    setMediaTargetProduct(product);
-    setIsEditingLogo(false);
-    setIsMediaModalOpen(true);
-  };
-
-  // WordPress quick logo editor trigger
-  const handleChangeLogo = () => {
-    if (!isAdmin) {
-      setAuthPendingAction(() => () => {
-        setIsEditingLogo(true);
-        setMediaTargetProduct(null);
-        setIsMediaModalOpen(true);
-      });
-      setIsAuthModalOpen(true);
-      return;
-    }
-    setIsEditingLogo(true);
-    setMediaTargetProduct(null);
-    setIsMediaModalOpen(true);
-  };
-
-  // Image selected from WordPress Media Library
-  const handleSelectMediaImage = async (newImageUrl: string) => {
-    if (mediaTargetProduct) {
-      const updatedProduct: Product = { ...mediaTargetProduct, imageUrl: newImageUrl };
-      try {
-        const res = await fetch(`/api/products/${mediaTargetProduct.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedProduct)
-        });
-        if (res.ok) {
-          setProducts(prev => prev.map(p => p.id === mediaTargetProduct.id ? updatedProduct : p));
-          if (selectedProduct && selectedProduct.id === mediaTargetProduct.id) {
-            setSelectedProduct(updatedProduct);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to update product image on server", err);
-      }
-    } else if (isEditingLogo) {
-      const updatedSettings: SiteSettings = {
-        ...siteSettings,
-        logo: {
-          ...siteSettings.logo,
-          type: 'image',
-          imageUrl: newImageUrl
-        }
-      };
-      try {
-        const res = await fetch('/api/site-settings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedSettings)
-        });
-        if (res.ok) {
-          setSiteSettings(updatedSettings);
-        }
-      } catch (err) {
-        console.error("Failed to update logo image on server", err);
-      }
-    }
-    setIsMediaModalOpen(false);
-    setMediaTargetProduct(null);
-    setIsEditingLogo(false);
-  };
-
   // Admin Logout
   const handleLogout = () => {
     localStorage.removeItem('bukhari_admin_auth');
@@ -286,32 +201,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-900 selection:bg-emerald-200 selection:text-emerald-950 font-['Plus_Jakarta_Sans',sans-serif]">
       
-      {/* WordPress-style Top Admin Bar */}
-      <WordPressAdminBar
-        isAuthenticated={isAdmin}
-        onOpenAuth={() => setIsAuthModalOpen(true)}
-        onLogout={handleLogout}
-        onOpenStudioTab={(tab) => handleOpenBackendStudio(tab)}
-        onOpenMediaLibrary={() => {
-          if (!isAdmin) {
-            setAuthPendingAction(() => () => {
-              setIsEditingLogo(false);
-              setMediaTargetProduct(null);
-              setIsMediaModalOpen(true);
-            });
-            setIsAuthModalOpen(true);
-          } else {
-            setIsEditingLogo(false);
-            setMediaTargetProduct(null);
-            setIsMediaModalOpen(true);
-          }
-        }}
-        onAddNewProduct={() => {
-          handleOpenBackendStudio('products');
-        }}
-      />
-
-      {/* Header (Fully dynamic, configurable from backend) */}
+      {/* Header (Clean, responsive header without admin banners or studio triggers) */}
       <Header
         currentTab={currentTab}
         onNavigate={navigateToTab}
@@ -319,9 +209,6 @@ export default function App() {
         onOpenInquiryTray={() => setIsInquiryTrayOpen(true)}
         inquiryCount={inquiryProductIds.length}
         siteSettings={siteSettings}
-        onOpenBackendStudio={() => handleOpenBackendStudio('header')}
-        isAdmin={isAdmin}
-        onChangeLogo={handleChangeLogo}
       />
 
       {/* Main Content Area based on Selected Tab */}
@@ -355,8 +242,6 @@ export default function App() {
               onViewAll={handleViewAllProducts}
               onAddToInquiry={handleToggleInquiry}
               inquiryProductIds={inquiryProductIds}
-              isAdmin={isAdmin}
-              onChangeProductImage={handleChangeProductImage}
             />
 
             {/* 6. Partner Brands Showcase */}
@@ -387,8 +272,6 @@ export default function App() {
             onAddToInquiry={handleToggleInquiry}
             inquiryProductIds={inquiryProductIds}
             onOpenInquiryTray={() => setIsInquiryTrayOpen(true)}
-            isAdmin={isAdmin}
-            onChangeProductImage={handleChangeProductImage}
           />
         )}
 
@@ -465,9 +348,10 @@ export default function App() {
         onProductsUpdated={(newProducts) => setProducts(newProducts)}
         onBrandsUpdated={(newBrands) => setBrands(newBrands)}
         initialTab={studioInitialTab}
+        onLogout={handleLogout}
       />
 
-      {/* WordPress-like Password Protection Modal (Password: 7467, strictly no hints) */}
+      {/* Password Protection Modal for Backend Access (Password: 7467, strictly no hints) */}
       <WordPressAuthModal
         isOpen={isAuthModalOpen}
         onClose={() => {
@@ -481,29 +365,6 @@ export default function App() {
             setAuthPendingAction(null);
           }
         }}
-      />
-
-      {/* WordPress-like Media Library Image Selector / Uploader */}
-      <MediaLibraryModal
-        isOpen={isMediaModalOpen}
-        onClose={() => {
-          setIsMediaModalOpen(false);
-          setMediaTargetProduct(null);
-          setIsEditingLogo(false);
-        }}
-        onSelectImage={handleSelectMediaImage}
-        title={
-          isEditingLogo
-            ? "WordPress Media: Select or Upload Website Logo"
-            : mediaTargetProduct
-            ? `WordPress Media: Change Image for "${mediaTargetProduct.name}"`
-            : "WordPress Media Library"
-        }
-        currentImageUrl={
-          isEditingLogo
-            ? siteSettings.logo.imageUrl
-            : mediaTargetProduct?.imageUrl || ''
-        }
       />
 
       {/* Floating WhatsApp Quick-Action Button */}

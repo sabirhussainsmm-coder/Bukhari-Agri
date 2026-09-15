@@ -18,7 +18,8 @@ import {
   EyeOff, 
   Building2, 
   ArrowUpRight,
-  AlertCircle
+  AlertCircle,
+  LogOut
 } from 'lucide-react';
 import { Product, PartnerBrand, SiteSettings, HeaderNavButton, ProductCategory } from '../types';
 import { MediaLibraryModal } from './MediaLibraryModal';
@@ -34,6 +35,7 @@ interface BackendStudioModalProps {
   onBrandsUpdated: (newBrands: PartnerBrand[]) => void;
   initialTab?: 'header' | 'products' | 'brands' | 'images';
   editingProductId?: string | null;
+  onLogout?: () => void;
 }
 
 export const BackendStudioModal: React.FC<BackendStudioModalProps> = ({
@@ -46,7 +48,8 @@ export const BackendStudioModal: React.FC<BackendStudioModalProps> = ({
   onProductsUpdated,
   onBrandsUpdated,
   initialTab = 'header',
-  editingProductId = null
+  editingProductId = null,
+  onLogout
 }) => {
   const [activeTab, setActiveTab] = useState<'header' | 'products' | 'brands' | 'images'>(initialTab);
   const [saving, setSaving] = useState(false);
@@ -334,14 +337,31 @@ export const BackendStudioModal: React.FC<BackendStudioModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors"
-            title="Close Backend Studio"
-            id="close-studio-btn"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onLogout && (
+              <button
+                onClick={() => {
+                  onLogout();
+                  onClose();
+                }}
+                className="text-slate-400 hover:text-rose-300 text-xs font-semibold px-3 py-1.5 rounded-xl hover:bg-rose-950/40 border border-slate-800 hover:border-rose-900 transition-colors flex items-center gap-1.5"
+                title="Log out and lock the Studio"
+                id="studio-logout-btn"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Log Out</span>
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-colors"
+              title="Close Backend Studio"
+              id="close-studio-btn"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Success Toast Notice */}
