@@ -80,7 +80,8 @@ export interface PlantItem {
   shortDescription: string;
   fullDescription: string;
   features: string[];
-  imageUrl: string;
+  imageUrl: string; // Fruit or produce photo
+  treeImageUrl?: string; // Plant sapling / tree photo
   inStock: boolean;
   featured?: boolean;
 }
@@ -93,8 +94,8 @@ export interface AgriMachine {
   urduName: string;
   category: MachineCategory;
   categoryLabel: string;
-  price: number;
-  formattedPrice: string;
+  price?: number;
+  formattedPrice?: string;
   originalPrice?: string;
   powerSource: string;
   capacityOrSize: string;

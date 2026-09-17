@@ -8,7 +8,7 @@ export const contactInfo: ContactInfo = {
   phone: "+92 311 6666600",
   whatsapp: "+92 311 6666600",
   email: "bukhariagropvtltd@gmail.com",
-  address: "Head Office & Regional Distribution Hub, Grain Market Road, Multan Agricultural Division, Punjab, Pakistan",
+  address: "Head Office & Regional Distribution Hub, Jhangi Syedan, Islamabad, Pakistan",
   businessHours: "Monday - Saturday: 8:00 AM - 7:00 PM (Field Support 24/7 during sowing seasons)",
   emergencyAgronomySupport: "+92 311 6666600",
   partnerCount: 12,

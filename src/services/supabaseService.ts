@@ -475,36 +475,65 @@ export async function uploadMediaToSupabase(
   bucket: string = 'bukhari-media'
 ): Promise<{ success: boolean; publicUrl?: string; error?: string }> {
   const client = getSupabaseClient();
-  if (!client) {
-    return { success: false, error: 'Supabase client not configured. Check Supabase connection.' };
+  if (client) {
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+      const filePath = `${Date.now()}_${cleanName}.${ext}`;
+
+      const { data, error } = await client.storage
+        .from(bucket)
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (!error && data) {
+        const { data: urlData } = client.storage
+          .from(bucket)
+          .getPublicUrl(data.path);
+
+        return {
+          success: true,
+          publicUrl: urlData.publicUrl
+        };
+      }
+    } catch (err: any) {
+      console.warn('[Supabase Storage upload error, falling back to server]:', err);
+    }
   }
 
+  // Fallback: Direct server upload to /api/upload-image (saved persistently to public/images/)
   try {
-    const ext = file.name.split('.').pop() || 'jpg';
-    const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-    const filePath = `${Date.now()}_${cleanName}.${ext}`;
+    const base64Data = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
-    const { data, error } = await client.storage
-      .from(bucket)
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: true
-      });
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        base64Data,
+        filename: file.name,
+        prefix: 'media'
+      })
+    });
 
-    if (error) throw error;
-
-    const { data: urlData } = client.storage
-      .from(bucket)
-      .getPublicUrl(data.path);
-
-    return {
-      success: true,
-      publicUrl: urlData.publicUrl
-    };
-  } catch (err: any) {
-    console.error('[Supabase Storage upload error]:', err);
-    return { success: false, error: err?.message || 'Failed to upload image to Supabase' };
+    if (res.ok) {
+      const json = await res.json();
+      const url = json.url || json.file?.url;
+      if (json.success && url) {
+        return { success: true, publicUrl: url };
+      }
+    }
+  } catch (backendErr: any) {
+    console.error('[Backend upload fallback error]:', backendErr);
   }
+
+  return { success: false, error: 'Failed to upload media to storage.' };
 }
 
 export async function listMediaFromSupabase(bucket: string = 'bukhari-media'): Promise<Array<{ name: string; publicUrl: string; size?: number; createdAt?: string }>> {
@@ -699,7 +728,7 @@ export async function fetchTeamFromDb(): Promise<TeamMember[]> {
         .select('*')
         .order('sort_order', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         return data.map((m: any) => ({
           id: m.id || m.member_key,
           name: m.name || 'Team Member',
@@ -720,10 +749,14 @@ export async function fetchTeamFromDb(): Promise<TeamMember[]> {
 
   // Fallback to Express backend /api/team
   try {
-    const res = await fetch('/api/team');
+    const res = await fetch(`/api/team?_t=${Date.now()}`, { cache: 'no-store' });
     if (res.ok) {
       const json = await res.json();
-      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+      if (json.success && Array.isArray(json.data)) {
+        try {
+          localStorage.setItem('bukhari_team_members', JSON.stringify(json.data));
+          localStorage.setItem('bukhari_team_fetched', 'true');
+        } catch {}
         return json.data;
       }
     }
@@ -734,16 +767,17 @@ export async function fetchTeamFromDb(): Promise<TeamMember[]> {
   // Fallback to localStorage
   try {
     const cached = localStorage.getItem('bukhari_team_members');
-    if (cached) {
+    const fetched = localStorage.getItem('bukhari_team_fetched');
+    if (cached && fetched) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed;
       }
     }
   } catch {}
 
-  // Final fallback to initial team members
-  return initialTeamMembers;
+  // If no backend team configured or user cleared all, return empty array
+  return [];
 }
 
 export async function saveTeamMemberToDb(
@@ -892,9 +926,18 @@ export async function deleteTeamMemberFromDb(id: string): Promise<{ success: boo
   }
 
   try {
-    const currentTeam = await fetchTeamFromDb();
-    const updated = currentTeam.filter(m => m.id !== id);
-    localStorage.setItem('bukhari_team_members', JSON.stringify(updated));
+    const cached = localStorage.getItem('bukhari_team_members');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed)) {
+        const updated = parsed.filter((m: any) => m.id !== id);
+        localStorage.setItem('bukhari_team_members', JSON.stringify(updated));
+        localStorage.setItem('bukhari_team_fetched', 'true');
+      }
+    } else {
+      localStorage.setItem('bukhari_team_members', JSON.stringify([]));
+      localStorage.setItem('bukhari_team_fetched', 'true');
+    }
   } catch {}
 
   return { success: true };

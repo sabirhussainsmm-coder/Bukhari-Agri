@@ -31,9 +31,6 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
 
   if (!machine) return null;
 
-  const totalPrice = machine.price * quantity;
-  const formattedTotalPrice = `Rs. ${totalPrice.toLocaleString()}`;
-
   const handleAdd = () => {
     onAddToInquiry(machine, quantity);
     setAddedNotice(true);
@@ -41,7 +38,7 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
   };
 
   const whatsAppUrl = `https://wa.me/923116666600?text=${encodeURIComponent(
-    `Assalam-o-Alaikum Bukhari Agro (Pvt) Ltd,\nI want to inquire about purchasing *${machine.name}* (${machine.urduName}).\n• Brand: ${machine.brand}\n• Price: *${machine.formattedPrice}*\n• Power: ${machine.powerSource}\n• Capacity: ${machine.capacityOrSize}\n• Warranty: ${machine.warranty}\n\nPlease share delivery terms, operator training, and field demo details.`
+    `Assalam-o-Alaikum Bukhari Agro (Pvt) Ltd,\nI want to inquire about purchasing *${machine.name}* (${machine.urduName}).\n• Brand: ${machine.brand}\n• Pricing: Inquiring for best farm price / quotation\n• Power: ${machine.powerSource}\n• Capacity: ${machine.capacityOrSize}\n• Warranty: ${machine.warranty}\n\nPlease share price, delivery terms, operator training, and field demo details.`
   )}`;
 
   return (
@@ -95,19 +92,30 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
                 </div>
               </div>
 
-              {/* Price Tag */}
-              <div className="bg-emerald-50/70 border border-emerald-200/60 p-3 rounded-xl">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-black text-emerald-950">
-                    {machine.formattedPrice}
-                  </span>
-                  {machine.originalPrice && (
-                    <span className="text-xs text-slate-400 line-through ml-auto">
-                      {machine.originalPrice}
-                    </span>
-                  )}
+              {/* WhatsApp Pricing Banner */}
+              <div className="bg-emerald-50 border border-emerald-200/80 p-3.5 rounded-xl">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5 text-emerald-600" />
+                    <div>
+                      <div className="text-sm font-extrabold text-emerald-950">
+                        قیمت واٹس ایپ پر دستیاب ہے
+                      </div>
+                      <div className="text-xs text-emerald-700 font-semibold">
+                        Official Price & Quotation on WhatsApp
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    href={whatsAppUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 text-xs font-bold px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors inline-flex items-center gap-1"
+                  >
+                    <span>Get Price</span>
+                  </a>
                 </div>
-                <div className="mt-1 text-xs text-emerald-800 font-medium">
+                <div className="mt-2 text-xs text-emerald-800 font-medium">
                   {machine.tagline}
                 </div>
               </div>

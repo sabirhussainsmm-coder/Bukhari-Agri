@@ -28,11 +28,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({
   onNavigateToContact,
   teamMembers
 }) => {
-  const [team, setTeam] = useState<TeamMember[]>(teamMembers && teamMembers.length > 0 ? teamMembers : initialTeamMembers);
+  const [team, setTeam] = useState<TeamMember[]>(teamMembers ?? []);
   const [loadingTeam, setLoadingTeam] = useState(false);
 
   useEffect(() => {
-    if (teamMembers && teamMembers.length > 0) {
+    if (teamMembers !== undefined) {
       setTeam(teamMembers);
     }
   }, [teamMembers]);
@@ -44,7 +44,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
       setLoadingTeam(true);
       try {
         const data = await fetchTeamFromDb();
-        if (isMounted && data && data.length > 0) {
+        if (isMounted && Array.isArray(data)) {
           setTeam(data);
         }
       } catch (err) {
@@ -81,7 +81,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
 
           <div className="flex items-center justify-center gap-6 mt-8 text-xs sm:text-sm text-emerald-200/80 font-medium">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Multan Division Hub
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Jhangi Syedan, Islamabad Hub
             </span>
             <span>•</span>
             <span className="flex items-center gap-1.5">
@@ -219,88 +219,90 @@ export const AboutPage: React.FC<AboutPageProps> = ({
         "about us men team ka section b ho jin ki images change ki ja sken lekin yad rhy jo b change hoga wo backend pr ho front end pr changing ka koi option na ho"
         -> Strictly displaying data served from /api/team with NO client-side editing/upload buttons.
       */}
-      <section className="py-16 sm:py-24 bg-white" id="team-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">
-                <Users className="w-3.5 h-3.5 text-emerald-600" />
-                <span>LEADERSHIP & TECHNICAL SPECIALISTS</span>
+      {team.length > 0 && (
+        <section className="py-16 sm:py-24 bg-white" id="team-section">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">
+                  <Users className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>LEADERSHIP & TECHNICAL SPECIALISTS</span>
+                </div>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                  Meet the Experts Behind <span className="text-[#16A34A]">Bukhari Agro</span>
+                </h2>
+                <p className="text-slate-600 text-sm sm:text-base mt-1.5 max-w-2xl">
+                  Our seasoned agronomists, plant pathologists, and supply chain directors provide frontline support to growers throughout the crop cycle.
+                </p>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                Meet the Experts Behind <span className="text-[#16A34A]">Bukhari Agro</span>
-              </h2>
-              <p className="text-slate-600 text-sm sm:text-base mt-1.5 max-w-2xl">
-                Our seasoned agronomists, plant pathologists, and supply chain directors provide frontline support to growers throughout the crop cycle.
-              </p>
+
+              {/* Backend-Managed Assurance Badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 text-xs font-medium self-start sm:self-auto">
+                <Server className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Backend Verified Profiles</span>
+              </div>
             </div>
 
-            {/* Backend-Managed Assurance Badge (Reinforcing user mandate: backend-controlled only, no front-end edits) */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 text-xs font-medium self-start sm:self-auto">
-              <Server className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Backend Verified Profiles</span>
+            {/* Team Members Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {team.map((member) => (
+                <div
+                  key={member.id}
+                  className="bg-[#FBFDF9] rounded-2xl overflow-hidden border border-emerald-100/90 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
+                  id={`team-card-${member.id}`}
+                >
+                  <div>
+                    {/* Member Photo */}
+                    <div className="relative w-full aspect-square overflow-hidden bg-emerald-950">
+                      <img
+                        src={member.imageUrl}
+                        alt={member.name}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover object-top transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                      
+                      {/* Department Tag Overlay */}
+                      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-emerald-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-xs uppercase tracking-wider">
+                        {member.department}
+                      </div>
+                    </div>
+
+                    {/* Member Info */}
+                    <div className="p-5 space-y-2">
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-800 transition-colors">
+                        {member.name}
+                      </h3>
+                      
+                      <div className="text-xs font-semibold text-[#16A34A]">
+                        {member.role}
+                      </div>
+
+                      <div className="text-[11px] text-slate-500 font-medium">
+                        {member.qualification}
+                      </div>
+
+                      <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-emerald-50">
+                        {member.bio}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Member Specialty Footer */}
+                  <div className="px-5 pb-5 pt-2">
+                    <div className="bg-emerald-50/90 rounded-xl p-2.5 text-[11px] text-emerald-900 border border-emerald-100">
+                      <span className="font-bold block text-emerald-950">Specialization:</span>
+                      <span className="line-clamp-2">{member.specialty}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+
           </div>
-
-          {/* Team Members Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member) => (
-              <div
-                key={member.id}
-                className="bg-[#FBFDF9] rounded-2xl overflow-hidden border border-emerald-100/90 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
-                id={`team-card-${member.id}`}
-              >
-                <div>
-                  {/* Member Photo (Rendered directly with no frontend editing options) */}
-                  <div className="relative w-full aspect-square overflow-hidden bg-emerald-950">
-                    <img
-                      src={member.imageUrl}
-                      alt={member.name}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover object-top transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                    
-                    {/* Department Tag Overlay */}
-                    <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-emerald-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-xs uppercase tracking-wider">
-                      {member.department}
-                    </div>
-                  </div>
-
-                  {/* Member Info */}
-                  <div className="p-5 space-y-2">
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-800 transition-colors">
-                      {member.name}
-                    </h3>
-                    
-                    <div className="text-xs font-semibold text-[#16A34A]">
-                      {member.role}
-                    </div>
-
-                    <div className="text-[11px] text-slate-500 font-medium">
-                      {member.qualification}
-                    </div>
-
-                    <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-emerald-50">
-                      {member.bio}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Member Specialty Footer */}
-                <div className="px-5 pb-5 pt-2">
-                  <div className="bg-emerald-50/90 rounded-xl p-2.5 text-[11px] text-emerald-900 border border-emerald-100">
-                    <span className="font-bold block text-emerald-950">Specialization:</span>
-                    <span className="line-clamp-2">{member.specialty}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 5. Bottom Navigation CTA */}
       <section className="py-12 bg-emerald-950 text-white text-center">

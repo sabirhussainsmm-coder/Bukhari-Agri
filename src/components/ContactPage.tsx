@@ -155,9 +155,9 @@ export const ContactPage: React.FC = () => {
               </div>
               <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Agri-Distribution Hub</div>
               <div className="text-xs font-bold text-slate-800 mt-1 line-clamp-2">
-                Grain Market Road, Multan Agricultural Belt, Punjab
+                Jhangi Syedan, Islamabad
               </div>
-              <div className="text-[11px] text-emerald-700 font-medium mt-0.5">Serving Southern & Central Punjab</div>
+              <div className="text-[11px] text-emerald-700 font-medium mt-0.5">Serving Islamabad, Rawalpindi & All Pakistan</div>
             </div>
           </div>
         </div>
@@ -246,7 +246,7 @@ export const ContactPage: React.FC = () => {
                       type="text"
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      placeholder="e.g. Multan, Khanewal, Vehari"
+                      placeholder="e.g. Islamabad, Rawalpindi, Punjab"
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-hidden"
                       id="contact-location"
                     />

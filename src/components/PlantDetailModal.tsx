@@ -32,6 +32,7 @@ export const PlantDetailModal: React.FC<PlantDetailModalProps> = ({
 }) => {
   const [quantity, setQuantity] = useState(10);
   const [addedNotice, setAddedNotice] = useState(false);
+  const [activeImageTab, setActiveImageTab] = useState<'fruit' | 'tree'>('fruit');
 
   if (!plant) return null;
 
@@ -79,16 +80,68 @@ export const PlantDetailModal: React.FC<PlantDetailModalProps> = ({
           
           {/* Top Grid: Image + Core Specs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
-            <div className="relative rounded-xl overflow-hidden bg-slate-100 aspect-4/3 sm:aspect-square border border-emerald-100 shadow-inner">
-              <img
-                src={plant.imageUrl}
-                alt={plant.name}
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-2 left-2 bg-emerald-900/90 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-md shadow-xs">
-                {plant.survivalRate}
+            <div>
+              <div className="relative rounded-xl overflow-hidden bg-slate-100 aspect-4/3 sm:aspect-square border border-emerald-100 shadow-inner group">
+                <img
+                  src={activeImageTab === 'tree' && plant.treeImageUrl ? plant.treeImageUrl : plant.imageUrl}
+                  alt={`${plant.name} - ${activeImageTab === 'tree' ? 'Plant & Tree' : 'Fruit'}`}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover transition-all duration-300"
+                />
+                <div className="absolute top-2 left-2 bg-emerald-900/90 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-md shadow-xs">
+                  {plant.survivalRate}
+                </div>
+                <div className="absolute top-2 right-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1">
+                  <span>{activeImageTab === 'tree' ? '🌱 پودا و درخت' : '🍎 پھل و پیداوار'}</span>
+                </div>
               </div>
+
+              {/* Dual Image Switcher Gallery */}
+              {plant.treeImageUrl && (
+                <div className="mt-2.5 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveImageTab('fruit')}
+                    className={`flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all cursor-pointer ${
+                      activeImageTab === 'fruit'
+                        ? 'border-emerald-600 bg-emerald-50/80 ring-2 ring-emerald-500/20'
+                        : 'border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <img
+                      src={plant.imageUrl}
+                      alt="Fruit view"
+                      referrerPolicy="no-referrer"
+                      className="w-9 h-9 rounded-md object-cover shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-bold text-slate-800 truncate">پھل (Fruit)</div>
+                      <div className="text-[10px] text-slate-500 truncate">پھل کی شکل</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveImageTab('tree')}
+                    className={`flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all cursor-pointer ${
+                      activeImageTab === 'tree'
+                        ? 'border-emerald-600 bg-emerald-50/80 ring-2 ring-emerald-500/20'
+                        : 'border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <img
+                      src={plant.treeImageUrl}
+                      alt="Tree view"
+                      referrerPolicy="no-referrer"
+                      className="w-9 h-9 rounded-md object-cover shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <div className="text-[11px] font-bold text-slate-800 truncate">پودا / درخت</div>
+                      <div className="text-[10px] text-slate-500 truncate">نرسری پودا</div>
+                    </div>
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">

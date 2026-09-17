@@ -76,19 +76,31 @@ export const AdminTeamManager: React.FC<AdminTeamManagerProps> = ({
       return;
     }
 
-    // 2. Fallback to Express backend /api/upload-image
+    // 2. Directly save to server media storage via /api/upload-image
     try {
-      const formData = new FormData();
-      formData.append('image', file);
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
       const serverRes = await fetch('/api/upload-image', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          base64Data,
+          filename: file.name,
+          prefix: 'team'
+        })
       });
+
       if (serverRes.ok) {
         const json = await serverRes.json();
-        if (json.success && json.file?.url) {
-          setEditingMember(prev => prev ? ({ ...prev, imageUrl: json.file.url }) : null);
-          showToast('Photo uploaded to server media storage!');
+        const uploadedUrl = json.url || json.file?.url;
+        if (json.success && uploadedUrl) {
+          setEditingMember(prev => prev ? ({ ...prev, imageUrl: uploadedUrl }) : null);
+          showToast('Photo uploaded and permanently saved to server!');
           setUploadingPhoto(false);
           return;
         }
@@ -290,8 +302,24 @@ export const AdminTeamManager: React.FC<AdminTeamManagerProps> = ({
       {filteredMembers.length === 0 && (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center space-y-3">
           <Users className="w-12 h-12 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-bold text-slate-700">No team members match your search</h3>
-          <p className="text-xs text-slate-500">Try adjusting your search or add a new team member.</p>
+          <h3 className="text-sm font-bold text-slate-700">
+            {teamMembers.length === 0 ? 'No Team Members Configured' : 'No team members match your search'}
+          </h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            {teamMembers.length === 0 
+              ? 'All previous team members have been removed. The team section on the About Us page is now hidden and will only show when you add new team members.'
+              : 'Try adjusting your search or add a new team member.'}
+          </p>
+          {teamMembers.length === 0 && (
+            <button
+              type="button"
+              onClick={handleOpenAddModal}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2271b1] hover:bg-[#135e96] text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer mt-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Your First Team Member</span>
+            </button>
+          )}
         </div>
       )}
 

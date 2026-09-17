@@ -193,7 +193,7 @@ export const AgriMachineryPage: React.FC<AgriMachineryPageProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMachines.map((machine) => {
               const whatsAppUrl = `https://wa.me/923116666600?text=${encodeURIComponent(
-                `Assalam-o-Alaikum Bukhari Agro,\nI want to inquire about *${machine.name}* (${machine.urduName}).\nPrice: *${machine.formattedPrice}*\nPower: ${machine.powerSource}\nCapacity: ${machine.capacityOrSize}\nWarranty: ${machine.warranty}\n\nPlease provide quotation and delivery details.`
+                `Assalam-o-Alaikum Bukhari Agro,\nI want to inquire about purchasing *${machine.name}* (${machine.urduName}).\nInquiring for official farm price and quotation via WhatsApp.\nPower: ${machine.powerSource}\nCapacity: ${machine.capacityOrSize}\nWarranty: ${machine.warranty}\n\nPlease provide quotation and delivery details.`
               )}`;
 
               return (
@@ -256,22 +256,15 @@ export const AgriMachineryPage: React.FC<AgriMachineryPageProps> = ({
                       </div>
                     </div>
 
-                    {/* Price Display */}
-                    <div className="pt-2 border-t border-slate-700/80 flex items-baseline justify-between">
-                      <div>
-                        <span className="text-2xl font-black text-amber-300">
-                          {machine.formattedPrice}
-                        </span>
-                        <div className="text-[11px] text-emerald-400 font-medium">
-                          {machine.tagline.slice(0, 45)}...
-                        </div>
+                    {/* WhatsApp Price Notice */}
+                    <div className="pt-2 border-t border-slate-700/80 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs bg-emerald-950/80 px-2.5 py-1.5 rounded-lg border border-emerald-800/80">
+                        <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Price on WhatsApp</span>
                       </div>
-
-                      {machine.originalPrice && (
-                        <div className="text-xs text-slate-500 line-through">
-                          {machine.originalPrice}
-                        </div>
-                      )}
+                      <div className="text-[11px] text-amber-300/90 font-medium text-right" dir="rtl">
+                        قیمت واٹس ایپ پر دستیاب
+                      </div>
                     </div>
 
                     {/* Action Buttons */}
@@ -288,10 +281,10 @@ export const AgriMachineryPage: React.FC<AgriMachineryPageProps> = ({
                         href={whatsAppUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-1 text-xs font-bold py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all shadow-xs cursor-pointer"
+                        className="w-full inline-flex items-center justify-center gap-1 text-xs font-bold py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-xs cursor-pointer"
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
-                        <span>Direct Quote</span>
+                        <span>WhatsApp Quote</span>
                       </a>
                     </div>
 

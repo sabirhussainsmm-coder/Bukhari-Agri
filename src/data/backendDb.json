@@ -8,17 +8,54 @@
       "height": 48
     },
     "headerButtons": [
-      { "id": "btn-home", "label": "Home", "targetTab": "home", "visible": true, "hasDropdown": false },
-      { "id": "btn-about", "label": "About Us", "targetTab": "about", "visible": true, "hasDropdown": false },
-      { "id": "btn-products", "label": "Products", "targetTab": "products", "visible": true, "hasDropdown": false },
-      { "id": "btn-categories", "label": "Categories", "targetTab": "categories", "visible": true, "hasDropdown": true },
-      { "id": "btn-brands", "label": "Agro Brands", "targetTab": "brands", "visible": true, "hasDropdown": false },
-      { "id": "btn-contact", "label": "Contact", "targetTab": "contact", "visible": true, "hasDropdown": false }
+      {
+        "id": "btn-home",
+        "label": "Home",
+        "targetTab": "home",
+        "visible": true,
+        "hasDropdown": false
+      },
+      {
+        "id": "btn-about",
+        "label": "About Us",
+        "targetTab": "about",
+        "visible": true,
+        "hasDropdown": false
+      },
+      {
+        "id": "btn-products",
+        "label": "Products",
+        "targetTab": "products",
+        "visible": true,
+        "hasDropdown": false
+      },
+      {
+        "id": "btn-categories",
+        "label": "Categories",
+        "targetTab": "categories",
+        "visible": true,
+        "hasDropdown": true
+      },
+      {
+        "id": "btn-brands",
+        "label": "Agro Brands",
+        "targetTab": "brands",
+        "visible": true,
+        "hasDropdown": false
+      },
+      {
+        "id": "btn-contact",
+        "label": "Contact",
+        "targetTab": "contact",
+        "visible": true,
+        "hasDropdown": false
+      }
     ],
     "topBarText": "Healthy Crops, Brighter Future",
     "helplinePhone": "+92 311 6666600",
     "whatsappNumber": "+92 311 6666600",
     "email": "bukhariagropvtltd@gmail.com",
+    "address": "Head Office & Regional Distribution Hub, Jhangi Syedan, Islamabad, Pakistan",
     "ctaButtonText": "bukhariagro.com",
     "ctaButtonAction": "contact",
     "ctaCustomUrl": ""
@@ -120,12 +157,32 @@
       "fullDescription": "Broad Spectrum Pesticide is formulated specifically for intensive agricultural zones. Combining fast contact kill with translaminar protection, it controls bollworms, spodoptera caterpillars, jassids, and thrips in cotton, rice, and vegetable crops.",
       "activeIngredient": "Emamectin Benzoate 1.9% + Lufenuron 4% EC",
       "formulation": "Emulsifiable Concentrate (EC)",
-      "targetCrops": ["Cotton", "Rice", "Maize", "Chilies", "Tomato", "Cauliflower"],
-      "targetPestsOrRole": ["Armyworm (Spodoptera)", "Pink Bollworm", "American Bollworm", "Thrips"],
-      "packSizes": ["250 ml", "500 ml", "1000 ml"],
+      "targetCrops": [
+        "Cotton",
+        "Rice",
+        "Maize",
+        "Chilies",
+        "Tomato",
+        "Cauliflower"
+      ],
+      "targetPestsOrRole": [
+        "Armyworm (Spodoptera)",
+        "Pink Bollworm",
+        "American Bollworm",
+        "Thrips"
+      ],
+      "packSizes": [
+        "250 ml",
+        "500 ml",
+        "1000 ml"
+      ],
       "dosage": "300 - 400 ml per acre in 100-120 Liters of clean water",
       "applicationMethod": "Foliar spray with hollow cone nozzle when pest threshold reaches economic level.",
-      "precautions": ["Wear protective gloves and mask during preparation", "Keep 7 days safety interval before harvest", "Avoid application during extreme midday heat"],
+      "precautions": [
+        "Wear protective gloves and mask during preparation",
+        "Keep 7 days safety interval before harvest",
+        "Avoid application during extreme midday heat"
+      ],
       "imageUrl": "/images/pesticide-bottle.jpg",
       "featured": true,
       "inStock": true
@@ -144,12 +201,31 @@
       "fullDescription": "Provides balanced Nitrogen, Phosphorus, and Potassium in equal 1:1:1 ratios alongside EDTA Zinc and Boron. Rapidly absorbed through leaf stomata and root hairs, it rejuvenates stunted crops and ensures robust yield tonnage.",
       "activeIngredient": "Total N: 20%, Available P2O5: 20%, Soluble K2O: 20% + Trace Elements",
       "formulation": "100% Water Soluble Micro-crystals",
-      "targetCrops": ["Wheat", "Cotton", "Sugarcane", "Potato", "Citrus", "Vegetables"],
-      "targetPestsOrRole": ["Balanced Vegetative Vigor", "Root Strengthening", "Photosynthetic Acceleration", "Grain Weight"],
-      "packSizes": ["1 kg", "5 kg", "25 kg"],
+      "targetCrops": [
+        "Wheat",
+        "Cotton",
+        "Sugarcane",
+        "Potato",
+        "Citrus",
+        "Vegetables"
+      ],
+      "targetPestsOrRole": [
+        "Balanced Vegetative Vigor",
+        "Root Strengthening",
+        "Photosynthetic Acceleration",
+        "Grain Weight"
+      ],
+      "packSizes": [
+        "1 kg",
+        "5 kg",
+        "25 kg"
+      ],
       "dosage": "2 - 3 kg per acre for foliar spray, or 5-10 kg per acre in flood/drip fertigation",
       "applicationMethod": "Foliar spray in 100-120L water or direct tank dissolution for drip fertigation.",
-      "precautions": ["Store in a dry cool store room", "Keep airtight to prevent caking in high humidity"],
+      "precautions": [
+        "Store in a dry cool store room",
+        "Keep airtight to prevent caking in high humidity"
+      ],
       "imageUrl": "/images/fertilizer-bag.jpg",
       "featured": true,
       "inStock": true
@@ -168,12 +244,27 @@
       "fullDescription": "Formulated to terminate wide-spectrum grass and broad-leaf weeds without causing leaf yellowing or crop stunting. Rapidly translocates to the root crown of weeds within 6 hours of application.",
       "activeIngredient": "Bispyribac-Sodium 20% WP",
       "formulation": "Wettable Powder (WP)",
-      "targetCrops": ["Paddy Rice (Direct Seeded & Transplanted)", "Wheat"],
-      "targetPestsOrRole": ["Deela (Cyperus rotundus)", "Swank (Echinochloa)", "Dumbi Sitti", "Wild Oats"],
-      "packSizes": ["100 gm", "250 gm", "500 gm"],
+      "targetCrops": [
+        "Paddy Rice (Direct Seeded & Transplanted)",
+        "Wheat"
+      ],
+      "targetPestsOrRole": [
+        "Deela (Cyperus rotundus)",
+        "Swank (Echinochloa)",
+        "Dumbi Sitti",
+        "Wild Oats"
+      ],
+      "packSizes": [
+        "100 gm",
+        "250 gm",
+        "500 gm"
+      ],
       "dosage": "100 gm per acre in 100-120 Liters of water",
       "applicationMethod": "Spray 15-22 days after transplanting in moist standing field moisture.",
-      "precautions": ["Do not spray during high winds", "Use dedicated herbicide spray tank or clean thoroughly"],
+      "precautions": [
+        "Do not spray during high winds",
+        "Use dedicated herbicide spray tank or clean thoroughly"
+      ],
       "imageUrl": "/images/pesticide-bottle.jpg",
       "featured": true,
       "inStock": true
@@ -192,12 +283,32 @@
       "fullDescription": "Fungicide Gold combines preventative spore barrier action with deep translaminar cure. Defends crops from rusts, powdery mildew, blast, and blight while extending the green leaf duration (Stay-Green effect) for maximum starch production.",
       "activeIngredient": "Azoxystrobin 200 g/L + Difenoconazole 125 g/L SC",
       "formulation": "Suspension Concentrate (SC)",
-      "targetCrops": ["Wheat", "Rice", "Cotton", "Mango", "Citrus", "Tomato", "Potato"],
-      "targetPestsOrRole": ["Yellow Rust", "Leaf Blast & Sheath Blight", "Early & Late Blight", "Anthracnose"],
-      "packSizes": ["200 ml", "500 ml", "1000 ml"],
+      "targetCrops": [
+        "Wheat",
+        "Rice",
+        "Cotton",
+        "Mango",
+        "Citrus",
+        "Tomato",
+        "Potato"
+      ],
+      "targetPestsOrRole": [
+        "Yellow Rust",
+        "Leaf Blast & Sheath Blight",
+        "Early & Late Blight",
+        "Anthracnose"
+      ],
+      "packSizes": [
+        "200 ml",
+        "500 ml",
+        "1000 ml"
+      ],
       "dosage": "200 ml per acre in 100-120 Liters of water",
       "applicationMethod": "Preventive foliar spray at first appearance of disease weather or early symptoms.",
-      "precautions": ["Shake well before measuring", "Rotate chemistry to prevent fungal strain tolerance"],
+      "precautions": [
+        "Shake well before measuring",
+        "Rotate chemistry to prevent fungal strain tolerance"
+      ],
       "imageUrl": "/images/pesticide-bottle.jpg",
       "featured": true,
       "inStock": true
@@ -216,12 +327,30 @@
       "fullDescription": "Belt Expert combines Flubendiamide and Thiacloprid. It causes instantaneous feeding cessation in caterpillars while disrupting pest nervous transmission, delivering long-lasting crop safety.",
       "activeIngredient": "Flubendiamide 240 g/L + Thiacloprid 240 g/L SC",
       "formulation": "Suspension Concentrate (SC)",
-      "targetCrops": ["Cotton", "Chilies", "Okra", "Tomatoes", "Cabbage"],
-      "targetPestsOrRole": ["Pink Bollworm", "Spotted Bollworm", "Whitefly", "Aphids"],
-      "packSizes": ["100 ml", "200 ml", "500 ml"],
+      "targetCrops": [
+        "Cotton",
+        "Chilies",
+        "Okra",
+        "Tomatoes",
+        "Cabbage"
+      ],
+      "targetPestsOrRole": [
+        "Pink Bollworm",
+        "Spotted Bollworm",
+        "Whitefly",
+        "Aphids"
+      ],
+      "packSizes": [
+        "100 ml",
+        "200 ml",
+        "500 ml"
+      ],
       "dosage": "150 ml per acre in 100 Liters of water",
       "applicationMethod": "Foliar application during evening time with hollow cone nozzle.",
-      "precautions": ["Wear protective spectacles and apron", "Keep away from domestic animals and food"],
+      "precautions": [
+        "Wear protective spectacles and apron",
+        "Keep away from domestic animals and food"
+      ],
       "imageUrl": "/images/pesticide-bottle.jpg",
       "featured": false,
       "inStock": true
@@ -240,12 +369,29 @@
       "fullDescription": "Sarsabz CAN contains 26% total Nitrogen (50% Nitrate Nitrogen for immediate crop consumption and 50% Ammoniacal Nitrogen for sustained feeding) alongside 10% soluble Calcium to reinforce plant cell walls.",
       "activeIngredient": "Total Nitrogen 26% (13% NO3-N + 13% NH4-N) + Calcium 10%",
       "formulation": "Homogenous Dust-Free Granules",
-      "targetCrops": ["Wheat", "Sugarcane", "Cotton", "Maize", "Citrus", "Vegetables"],
-      "targetPestsOrRole": ["Immediate Tillering", "Cell Wall Strength", "Acidification Prevention", "Yield Density"],
-      "packSizes": ["50 kg bag"],
+      "targetCrops": [
+        "Wheat",
+        "Sugarcane",
+        "Cotton",
+        "Maize",
+        "Citrus",
+        "Vegetables"
+      ],
+      "targetPestsOrRole": [
+        "Immediate Tillering",
+        "Cell Wall Strength",
+        "Acidification Prevention",
+        "Yield Density"
+      ],
+      "packSizes": [
+        "50 kg bag"
+      ],
       "dosage": "1 to 2 bags (50-100 kg) per acre during second and third irrigation",
       "applicationMethod": "Broadcast evenly across the field before irrigation flood.",
-      "precautions": ["Do not mix with superphosphate before field application", "Store on pallets off wet ground"],
+      "precautions": [
+        "Do not mix with superphosphate before field application",
+        "Store on pallets off wet ground"
+      ],
       "imageUrl": "/images/fertilizer-bag.jpg",
       "featured": false,
       "inStock": true
@@ -264,12 +410,31 @@
       "fullDescription": "Karate 2.5 EC delivers fast paralyzing action on insects upon contact and ingestion. Features high rainfastness and repellency, driving insects out of hidden floral parts.",
       "activeIngredient": "Lambda-cyhalothrin 2.5% EC",
       "formulation": "Emulsifiable Concentrate (EC)",
-      "targetCrops": ["Cotton", "Wheat", "Paddy", "Mango", "Vegetables"],
-      "targetPestsOrRole": ["Aphids", "Jassids", "Leafminers", "Armyworm", "Fruit Borers"],
-      "packSizes": ["250 ml", "500 ml", "1000 ml"],
+      "targetCrops": [
+        "Cotton",
+        "Wheat",
+        "Paddy",
+        "Mango",
+        "Vegetables"
+      ],
+      "targetPestsOrRole": [
+        "Aphids",
+        "Jassids",
+        "Leafminers",
+        "Armyworm",
+        "Fruit Borers"
+      ],
+      "packSizes": [
+        "250 ml",
+        "500 ml",
+        "1000 ml"
+      ],
       "dosage": "330 - 400 ml per acre in 100 Liters of water",
       "applicationMethod": "Thorough foliar coverage targeting lower leaf canopy.",
-      "precautions": ["Toxic to aquatic organisms - keep away from fish ponds", "Do not spray against headwind"],
+      "precautions": [
+        "Toxic to aquatic organisms - keep away from fish ponds",
+        "Do not spray against headwind"
+      ],
       "imageUrl": "/images/pesticide-bottle.jpg",
       "featured": false,
       "inStock": true
@@ -288,12 +453,29 @@
       "fullDescription": "Engro DAP provides 18% Nitrogen and 46% Phosphorus in high water solubility. Applied at seedbed preparation to jumpstart root architecture and accelerate early crop establishment.",
       "activeIngredient": "Nitrogen 18% + Phosphorus (P2O5) 46%",
       "formulation": "Standard High Hardness Granules",
-      "targetCrops": ["Wheat", "Cotton", "Sugarcane", "Rice", "Maize", "Potato", "Orchards"],
-      "targetPestsOrRole": ["Root Anchor Development", "Seed Germination Vigor", "Stem Sturdiness"],
-      "packSizes": ["50 kg bag"],
+      "targetCrops": [
+        "Wheat",
+        "Cotton",
+        "Sugarcane",
+        "Rice",
+        "Maize",
+        "Potato",
+        "Orchards"
+      ],
+      "targetPestsOrRole": [
+        "Root Anchor Development",
+        "Seed Germination Vigor",
+        "Stem Sturdiness"
+      ],
+      "packSizes": [
+        "50 kg bag"
+      ],
       "dosage": "1 to 1.5 bags (50-75 kg) per acre applied at sowing time",
       "applicationMethod": "Drill application with seed drill or uniform broadcast before final planking.",
-      "precautions": ["Ensure proper soil moisture at time of drilling", "Store in well-ventilated dry warehouse"],
+      "precautions": [
+        "Ensure proper soil moisture at time of drilling",
+        "Store in well-ventilated dry warehouse"
+      ],
       "imageUrl": "/images/fertilizer-bag.jpg",
       "featured": false,
       "inStock": true
@@ -312,12 +494,30 @@
       "fullDescription": "Super Root & Bloom accelerates cellular elongation and optimizes vascular sap flow during high-temperature stress periods. Significantly reduces flower shedding in cotton and chilies while promoting uniform fruit caliber.",
       "activeIngredient": "Gibberellic Acid (GA3) 10% + Brassinolides + Fulvic Matrix",
       "formulation": "Soluble Powder (SP)",
-      "targetCrops": ["Cotton", "Chili", "Rice", "Tomato", "Wheat", "Citrus"],
-      "targetPestsOrRole": ["Flower Drop Reduction", "Boll Weight Increase", "Heat Shock Resilience"],
-      "packSizes": ["10 gm sachet", "50 gm bottle", "250 gm pack"],
+      "targetCrops": [
+        "Cotton",
+        "Chili",
+        "Rice",
+        "Tomato",
+        "Wheat",
+        "Citrus"
+      ],
+      "targetPestsOrRole": [
+        "Flower Drop Reduction",
+        "Boll Weight Increase",
+        "Heat Shock Resilience"
+      ],
+      "packSizes": [
+        "10 gm sachet",
+        "50 gm bottle",
+        "250 gm pack"
+      ],
       "dosage": "10-20 gm per acre in 100 Liters of water",
       "applicationMethod": "Foliar spray during early morning at pre-bloom and peak flowering stages.",
-      "precautions": ["Do not overdose recommended concentration", "Ensure uniform tank dissolution"],
+      "precautions": [
+        "Do not overdose recommended concentration",
+        "Ensure uniform tank dissolution"
+      ],
       "imageUrl": "/images/fertilizer-bag.jpg",
       "featured": true,
       "inStock": true
@@ -336,12 +536,27 @@
       "fullDescription": "Unlike raw zinc sulphate which gets tied up with soil phosphorus, this EDTA-chelated Zinc remains fully bio-available. Restores stunted plants, cures bleached leaf symptoms in paddy rice, and stimulates vegetative enzymes.",
       "activeIngredient": "Chelated Zinc (Zn-EDTA) 15% min",
       "formulation": "Micro-granulated Soluble Powder",
-      "targetCrops": ["Paddy Rice", "Wheat", "Cotton", "Maize", "Citrus"],
-      "targetPestsOrRole": ["Cures Zinc Chlorosis", "Enzyme Activation", "Interveinal Greening"],
-      "packSizes": ["500 gm", "1000 gm"],
+      "targetCrops": [
+        "Paddy Rice",
+        "Wheat",
+        "Cotton",
+        "Maize",
+        "Citrus"
+      ],
+      "targetPestsOrRole": [
+        "Cures Zinc Chlorosis",
+        "Enzyme Activation",
+        "Interveinal Greening"
+      ],
+      "packSizes": [
+        "500 gm",
+        "1000 gm"
+      ],
       "dosage": "500 gm per acre in 100-120 Liters of water (Foliar)",
       "applicationMethod": "Foliar spray at 20-30 days after transplanting / emergence.",
-      "precautions": ["Can be mixed with standard insecticides and fungicides safely"],
+      "precautions": [
+        "Can be mixed with standard insecticides and fungicides safely"
+      ],
       "imageUrl": "/images/fertilizer-bag.jpg",
       "featured": false,
       "inStock": true
@@ -360,12 +575,23 @@
       "fullDescription": "Atlantis 3.6 WDG controls canary grass (Dumbi Sitti), wild oats, and broad-leaf weeds in wheat fields with built-in mefenpyr safener protecting the wheat plant.",
       "activeIngredient": "Mesosulfuron-methyl 3.0% + Iodosulfuron-methyl-sodium 0.6% + Mefenpyr-diethyl (Safener) WDG",
       "formulation": "Water Dispersible Granules (WDG)",
-      "targetCrops": ["Wheat"],
-      "targetPestsOrRole": ["Phalaris minor (Dumbi Sitti)", "Avena fatua (Wild Oat)", "Broadleaf Weeds"],
-      "packSizes": ["160 gm + Biopower Surfactant pack"],
+      "targetCrops": [
+        "Wheat"
+      ],
+      "targetPestsOrRole": [
+        "Phalaris minor (Dumbi Sitti)",
+        "Avena fatua (Wild Oat)",
+        "Broadleaf Weeds"
+      ],
+      "packSizes": [
+        "160 gm + Biopower Surfactant pack"
+      ],
       "dosage": "160 gm + 400 ml surfactant per acre in 120 Liters of water",
       "applicationMethod": "Flat fan nozzle spray 30-35 days after wheat sowing after first irrigation.",
-      "precautions": ["Do not use on oat or barley crops", "Ensure soil has proper moisture during application"],
+      "precautions": [
+        "Do not use on oat or barley crops",
+        "Ensure soil has proper moisture during application"
+      ],
       "imageUrl": "/images/pesticide-bottle.jpg",
       "featured": false,
       "inStock": true
@@ -384,15 +610,34 @@
       "fullDescription": "Nativo combines Tebuconazole and Trifloxystrobin. Gives protective, curative, and eradicative antifungal action with pronounced greening effect for clean grains and high test-weight.",
       "activeIngredient": "Tebuconazole 50% + Trifloxystrobin 25% WG",
       "formulation": "Water Dispersible Granule (WG)",
-      "targetCrops": ["Rice", "Wheat", "Mango", "Tomato", "Chili"],
-      "targetPestsOrRole": ["Rice Blast", "Sheath Blight", "Yellow Rust in Wheat", "Powdery Mildew"],
-      "packSizes": ["65 gm", "130 gm", "260 gm"],
+      "targetCrops": [
+        "Rice",
+        "Wheat",
+        "Mango",
+        "Tomato",
+        "Chili"
+      ],
+      "targetPestsOrRole": [
+        "Rice Blast",
+        "Sheath Blight",
+        "Yellow Rust in Wheat",
+        "Powdery Mildew"
+      ],
+      "packSizes": [
+        "65 gm",
+        "130 gm",
+        "260 gm"
+      ],
       "dosage": "65 gm - 100 gm per acre in 100-120 Liters of water",
       "applicationMethod": "Foliar spray at boot leaf stage in rice and heading stage in wheat.",
-      "precautions": ["Store in dry original packaging", "Keep out of reach of children and food items"],
+      "precautions": [
+        "Store in dry original packaging",
+        "Keep out of reach of children and food items"
+      ],
       "imageUrl": "/images/pesticide-bottle.jpg",
       "featured": false,
       "inStock": true
     }
-  ]
+  ],
+  "team": []
 }

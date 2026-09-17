@@ -7,7 +7,8 @@ import {
   Cpu, 
   Wrench, 
   CheckCircle2, 
-  ExternalLink 
+  ExternalLink,
+  MessageCircle
 } from 'lucide-react';
 import { AgriMachine } from '../types';
 
@@ -131,15 +132,9 @@ export const AgriMachinerySection: React.FC<AgriMachinerySectionProps> = ({
 
                 {/* Price & Action */}
                 <div className="pt-3 border-t border-slate-700 flex items-center justify-between gap-2">
-                  <div>
-                    <div className="text-lg font-black text-amber-300">
-                      {machine.formattedPrice}
-                    </div>
-                    {machine.originalPrice && (
-                      <div className="text-[10px] text-slate-500 line-through">
-                        {machine.originalPrice}
-                      </div>
-                    )}
+                  <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs bg-emerald-950/60 px-2.5 py-1.5 rounded-lg border border-emerald-800/60">
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>Price on WhatsApp</span>
                   </div>
 
                   <button
@@ -147,7 +142,7 @@ export const AgriMachinerySection: React.FC<AgriMachinerySectionProps> = ({
                     onClick={() => onSelectMachine(machine)}
                     className="inline-flex items-center gap-1 text-xs font-bold px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all shadow-xs cursor-pointer"
                   >
-                    <span>Specs & Rates</span>
+                    <span>Details & Quote</span>
                   </button>
                 </div>
               </div>

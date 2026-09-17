@@ -194,28 +194,30 @@ export const BukhariAgroLogo: React.FC<LogoProps> = ({
     );
   }
 
-  // Default Variant: Horizontal (As displayed on the website header in image.png)
+  // Default Variant: Horizontal (As displayed on the website header)
   return (
-    <div className={`flex items-center gap-3 select-none group ${className}`}>
-      <Mark sizePx={size === 'sm' ? 38 : size === 'lg' ? 56 : size === 'xl' ? 68 : 46} />
-      <div className="flex flex-col leading-tight">
-        <div className="flex items-baseline gap-1.5">
+    <div className={`flex items-center gap-2 sm:gap-3 select-none group min-w-0 ${className}`}>
+      <div className="shrink-0">
+        <Mark sizePx={size === 'sm' ? 32 : size === 'lg' ? 56 : size === 'xl' ? 68 : 42} />
+      </div>
+      <div className="flex flex-col leading-tight min-w-0">
+        <div className="flex items-baseline gap-1 sm:gap-1.5 truncate">
           <span
             style={{ color: primaryDark }}
-            className="text-xl sm:text-2xl font-black tracking-wide uppercase font-['Plus_Jakarta_Sans',sans-serif]"
+            className="text-base sm:text-xl lg:text-2xl font-black tracking-wide uppercase font-['Plus_Jakarta_Sans',sans-serif]"
           >
             BUKHARI
           </span>
           <span
             style={{ color: leafGreen }}
-            className="text-xl sm:text-2xl font-black tracking-wide uppercase font-['Plus_Jakarta_Sans',sans-serif]"
+            className="text-base sm:text-xl lg:text-2xl font-black tracking-wide uppercase font-['Plus_Jakarta_Sans',sans-serif]"
           >
             AGRO
           </span>
         </div>
         <div
           style={{ color: subtitleColor }}
-          className="text-[8.5px] sm:text-[9.5px] font-bold tracking-[0.20em] uppercase whitespace-nowrap opacity-90 mt-0.5"
+          className="text-[7.5px] sm:text-[9px] font-bold tracking-[0.14em] sm:tracking-[0.20em] uppercase truncate opacity-90 mt-0.5"
         >
           PESTICIDES • FERTILIZERS • CROP CARE
         </div>

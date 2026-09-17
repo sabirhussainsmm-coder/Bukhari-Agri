@@ -31,6 +31,7 @@ export const initialPlants: PlantItem[] = [
       'Technical planting layout and distance guide included'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1582979512210-99b6a53386f9?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: true
   },
@@ -55,7 +56,7 @@ export const initialPlants: PlantItem[] = [
     soilType: 'Deep, fertile alluvial loam with good drainage',
     tagline: 'The King of Mangoes — Sweet aroma, heavy yield, export favorite',
     shortDescription: 'Genuine Multan origin Samar Bahisht Chaunsa grafted plants with strong stem girth and healthy foliage.',
-    fullDescription: 'Multani Chaunsa is the most sought-after export mango globally. These grafted plants are raised in Multan and Rahim Yar Khan nurseries using certified scions, guaranteeing authentic sweet aroma, fiberless golden pulp, and long orchard longevity.',
+    fullDescription: 'Multani Chaunsa is the most sought-after export mango globally. These grafted plants are raised in certified nurseries using genuine scions, guaranteeing authentic sweet aroma, fiberless golden pulp, and long orchard longevity.',
     features: [
       'Genuine Samar Bahisht Chaunsa scion wood',
       'Thick graft union healed over 12 months in nursery',
@@ -64,6 +65,7 @@ export const initialPlants: PlantItem[] = [
       'Orchard spacing recommendation: 30x30 or 25x25 feet'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: true
   },
@@ -95,6 +97,7 @@ export const initialPlants: PlantItem[] = [
       'Robust pest and wind resistance'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1591073113125-e46713c829ed?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: false
   },
@@ -127,6 +130,7 @@ export const initialPlants: PlantItem[] = [
       'Tolerant to salinity and frost'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1536511135898-132b14421869?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: true
   },
@@ -159,6 +163,7 @@ export const initialPlants: PlantItem[] = [
       'Longevity over 100+ productive years'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1474440698490-29c91ae25c61?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1545167496-c1e092d383a2?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: true
   },
@@ -191,6 +196,7 @@ export const initialPlants: PlantItem[] = [
       'Fast growing: can reach 10-12 feet in one year'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: false
   },
@@ -222,6 +228,7 @@ export const initialPlants: PlantItem[] = [
       'Dual-purpose: excellent for fresh table dates & Chhohara processing'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: true
   },
@@ -254,6 +261,7 @@ export const initialPlants: PlantItem[] = [
       'Direct farm gate buying demand by wood mills'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: true
   },
@@ -285,6 +293,7 @@ export const initialPlants: PlantItem[] = [
       'Excellent shade and windbreak for agricultural crops'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: false
   },
@@ -316,6 +325,7 @@ export const initialPlants: PlantItem[] = [
       'High resistance to common leaf spot'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1590502593747-42a996133562?auto=format&fit=crop&w=800&q=80',
+    treeImageUrl: 'https://images.unsplash.com/photo-1592150621744-aca64f48394a?auto=format&fit=crop&w=800&q=80',
     inStock: true,
     featured: false
   }
@@ -328,9 +338,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: '20 لیٹر ڈبل موٹر بیٹری و مینوئل سپرے پمپ',
     category: 'sprayers',
     categoryLabel: 'Spraying Equipment (سپرے مشینیں)',
-    price: 8500,
-    formattedPrice: 'Rs. 8,500',
-    originalPrice: 'Rs. 10,200',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: '12V 12Ah Heavy Duty Rechargeable Battery',
     capacityOrSize: '20 Liters Tank Capacity',
     warranty: '1 Year Motor & Battery Warranty + Free Spare Parts',
@@ -369,9 +377,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: '4 سٹروک پورٹیبل ہائی پریشر پاور سپرے مشین',
     category: 'sprayers',
     categoryLabel: 'Spraying Equipment (سپرے مشینیں)',
-    price: 26500,
-    formattedPrice: 'Rs. 26,500',
-    originalPrice: 'Rs. 31,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: '31cc 4-Stroke OHV Commercial Petrol Engine (Honda Design)',
     capacityOrSize: 'Draws from drum / 50m Heavy Delivery Hose',
     warranty: '1 Year Engine & Brass Pump Warranty',
@@ -409,9 +415,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: 'زرعی سپرے ڈرون (16 تا 30 لیٹر پی لوڈ)',
     category: 'drones',
     categoryLabel: 'Agri Drone Technology (زرعی ڈرون)',
-    price: 1450000,
-    formattedPrice: 'Rs. 1,450,000',
-    originalPrice: 'Rs. 1,650,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: 'Smart LiPo 14S 22,000mAh Battery with Dual Fast Charger',
     capacityOrSize: '16 Liters Payload (Sprays 1 Acre in 7 Minutes)',
     warranty: '1 Year Flight Controller & Motor Warranty + Pilot Training',
@@ -448,9 +452,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: '7 ہارس پاور چھوٹا پاور ٹلر و گوڈی مشین',
     category: 'tillage',
     categoryLabel: 'Soil Cultivation (زمین کی تیاری)',
-    price: 95000,
-    formattedPrice: 'Rs. 95,000',
-    originalPrice: 'Rs. 110,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: '7HP 212cc 4-Stroke Commercial Petrol Engine',
     capacityOrSize: '24 Rotary Tilling Blades (Width: 36 inches)',
     warranty: '1 Year Engine & Heavy Gearbox Warranty',
@@ -487,9 +489,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: 'ہیوی ڈیوٹی ٹریکٹر روٹاویٹر (48 بلیڈ / 7 فٹ)',
     category: 'tillage',
     categoryLabel: 'Soil Cultivation (زمین کی تیاری)',
-    price: 290000,
-    formattedPrice: 'Rs. 290,000',
-    originalPrice: 'Rs. 325,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: 'Tractor PTO Driven (Compatible with 50 to 85 HP Tractors)',
     capacityOrSize: '7 Feet Width / 48 Boron Steel L-Type Blades',
     warranty: '1 Year Warranty on Multi-Speed Gearbox & Rotor Shaft',
@@ -526,9 +526,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: 'آٹومیٹک بیج و کھاد ڈرل (گندم و ربیع بیجائی)',
     category: 'seeding',
     categoryLabel: 'Seeding & Planting (بوائی مشینیں)',
-    price: 175000,
-    formattedPrice: 'Rs. 175,000',
-    originalPrice: 'Rs. 195,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: 'Tractor 3-Point Linkage (50+ HP)',
     capacityOrSize: '11 to 13 Tynes Double Box (Seed & DAP Fertilizer)',
     warranty: '1 Year Mechanical Warranty on Fluted Roller Feeders',
@@ -562,9 +560,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: 'لیزر لینڈ لیولر سسٹم مع ہائیڈرولک بکٹ',
     category: 'tillage',
     categoryLabel: 'Land Leveling (لیزر لیولر)',
-    price: 560,
-    formattedPrice: 'Rs. 560,000',
-    originalPrice: 'Rs. 620,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: '12V Tractor Battery + Hydraulic Valve Control',
     capacityOrSize: '7.5 Feet Heavy Scraper Bucket (1000m Operating Range)',
     warranty: '1 Year Transmitter & Hydraulic System Warranty',
@@ -598,9 +594,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: '10 ہارس پاور سولر ٹیوب ویل پمپنگ سسٹم',
     category: 'irrigation',
     categoryLabel: 'Solar & Irrigation (شمسی ٹیوب ویل)',
-    price: 580000,
-    formattedPrice: 'Rs. 580,000',
-    originalPrice: 'Rs. 650,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: 'Solar Photovoltaic Tier-1 Mono PERC Panels + VFD Inverter',
     capacityOrSize: '10 HP Stainless Steel Multistage Submersible Pump',
     warranty: '5 Years Inverter Warranty, 25 Years Solar Panel Warranty',
@@ -634,9 +628,7 @@ export const initialAgriMachines: AgriMachine[] = [
     urduName: 'ہیوی ڈیوٹی ٹوکہ مشین (برائے چارہ و لائیو سٹاک)',
     category: 'harvesting',
     categoryLabel: 'Harvesting & Fodder (ٹوکہ و لائیو سٹاک)',
-    price: 42000,
-    formattedPrice: 'Rs. 42,000',
-    originalPrice: 'Rs. 48,000',
+    formattedPrice: 'Price on WhatsApp / قیمت واٹس ایپ پر',
     powerSource: '3HP Single Phase Electric Motor / Tractor Belt Pulley',
     capacityOrSize: 'Cuts up to 2.5 Tons / Hour Green & Dry Fodder',
     warranty: '1 Year Warranty on Heavy Cast-Iron Flywheel & Bearings',

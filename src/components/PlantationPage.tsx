@@ -23,6 +23,174 @@ interface PlantationPageProps {
   onNavigateToContact: () => void;
 }
 
+const PlantCatalogCard: React.FC<{
+  plant: PlantItem;
+  onSelectPlant: (plant: PlantItem) => void;
+}> = ({ plant, onSelectPlant }) => {
+  const [viewMode, setViewMode] = useState<'fruit' | 'tree'>('fruit');
+  const currentImg = viewMode === 'tree' && plant.treeImageUrl ? plant.treeImageUrl : plant.imageUrl;
+
+  const whatsAppUrl = `https://wa.me/923116666600?text=${encodeURIComponent(
+    `Assalam-o-Alaikum Bukhari Agro,\nI want to order certified nursery saplings for *${plant.name}* (${plant.urduName}).\nPrice: *${plant.formattedPrice} ${plant.unit}*\nRootstock: ${plant.heightOrAge}\n\nPlease share booking and delivery terms.`
+  )}`;
+
+  return (
+    <div className="bg-white rounded-2xl border border-emerald-100 hover:border-emerald-300 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
+      {/* Image & Tags */}
+      <div 
+        className="relative aspect-4/3 overflow-hidden bg-slate-100 cursor-pointer"
+        onClick={() => onSelectPlant(plant)}
+      >
+        <img
+          src={currentImg}
+          alt={plant.name}
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-emerald-900 text-xs font-bold px-2.5 py-1 rounded-lg shadow-xs border border-emerald-100">
+          {plant.categoryLabel.split('(')[0]}
+        </div>
+
+        {/* Fruit vs Tree Quick Toggle Buttons */}
+        {plant.treeImageUrl && (
+          <div 
+            className="absolute top-3 right-3 z-10 flex items-center bg-slate-950/85 backdrop-blur-xs rounded-lg p-0.5 border border-white/20 text-[10px] font-bold text-white shadow-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setViewMode('fruit')}
+              title="پھل دیکھیں"
+              className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                viewMode === 'fruit' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              پھل
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('tree')}
+              title="پودا / درخت دیکھیں"
+              className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                viewMode === 'tree' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              پودا
+            </button>
+          </div>
+        )}
+
+        {/* Inset Secondary Thumbnail Preview */}
+        {plant.treeImageUrl && (
+          <div 
+            className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 bg-slate-950/85 backdrop-blur-xs text-white p-1 rounded-lg border border-white/20 text-[9px] font-semibold cursor-pointer hover:bg-slate-900 transition-colors shadow-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              setViewMode(viewMode === 'fruit' ? 'tree' : 'fruit');
+            }}
+            title="دوسری تصویر دیکھنے کے لیے کلک کریں"
+          >
+            <img
+              src={viewMode === 'fruit' ? plant.treeImageUrl : plant.imageUrl}
+              alt="alternate view"
+              referrerPolicy="no-referrer"
+              className="w-6 h-6 rounded object-cover border border-white/40"
+            />
+            <span className="pr-1">{viewMode === 'fruit' ? 'پودا دیکھیں' : 'پھل دیکھیں'}</span>
+          </div>
+        )}
+
+        <div className="absolute bottom-3 right-3 bg-emerald-950/95 text-white text-xs font-bold px-2.5 py-1 rounded-lg backdrop-blur-xs" dir="rtl">
+          {plant.urduName}
+        </div>
+      </div>
+
+      {/* Body Content */}
+      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+        <div>
+          <div className="flex items-start justify-between gap-2">
+            <h3 
+              onClick={() => onSelectPlant(plant)}
+              className="font-extrabold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors cursor-pointer"
+            >
+              {plant.name}
+            </h3>
+          </div>
+          
+          {plant.scientificName && (
+            <div className="text-xs text-slate-400 italic mt-0.5">
+              {plant.scientificName}
+            </div>
+          )}
+
+          <p className="text-xs text-slate-600 mt-2 line-clamp-2 leading-relaxed">
+            {plant.shortDescription}
+          </p>
+        </div>
+
+        {/* Quick Specs Badges */}
+        <div className="grid grid-cols-2 gap-2 text-xs bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100/60">
+          <div className="flex items-center gap-1.5 text-slate-700">
+            <Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <span className="truncate">{plant.fruitingTime}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-slate-700">
+            <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span className="truncate">{plant.heightOrAge}</span>
+          </div>
+        </div>
+
+        {/* Pricing Display */}
+        <div className="pt-2 border-t border-slate-100 flex items-baseline justify-between">
+          <div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl font-black text-emerald-900">
+                {plant.formattedPrice}
+              </span>
+              <span className="text-xs text-slate-400 font-medium">
+                {plant.unit}
+              </span>
+            </div>
+            {plant.bulkPrice && (
+              <div className="text-[11px] font-bold text-emerald-700 mt-0.5">
+                Bulk: {plant.bulkPrice}
+              </div>
+            )}
+          </div>
+
+          {plant.originalPrice && (
+            <div className="text-xs text-slate-400 line-through">
+              {plant.originalPrice}
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => onSelectPlant(plant)}
+            className="w-full inline-flex items-center justify-center gap-1 text-xs font-bold py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-xs cursor-pointer"
+          >
+            <span>View Details</span>
+          </button>
+
+          <a
+            href={whatsAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full inline-flex items-center justify-center gap-1 text-xs font-bold py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-xs cursor-pointer"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>WhatsApp Order</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
 export const PlantationPage: React.FC<PlantationPageProps> = ({
   plants,
   onSelectPlant,
@@ -188,125 +356,13 @@ export const PlantationPage: React.FC<PlantationPageProps> = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPlants.map((plant) => {
-              const whatsAppUrl = `https://wa.me/923116666600?text=${encodeURIComponent(
-                `Assalam-o-Alaikum Bukhari Agro,\nI want to order certified nursery saplings for *${plant.name}* (${plant.urduName}).\nPrice: *${plant.formattedPrice} ${plant.unit}*\nRootstock: ${plant.heightOrAge}\n\nPlease share booking and delivery terms.`
-              )}`;
-
-              return (
-                <div
-                  key={plant.id}
-                  className="bg-white rounded-2xl border border-emerald-100 hover:border-emerald-300 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group"
-                >
-                  {/* Image & Tags */}
-                  <div 
-                    className="relative aspect-4/3 overflow-hidden bg-slate-100 cursor-pointer"
-                    onClick={() => onSelectPlant(plant)}
-                  >
-                    <img
-                      src={plant.imageUrl}
-                      alt={plant.name}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs text-emerald-900 text-xs font-bold px-2.5 py-1 rounded-lg shadow-xs border border-emerald-100">
-                      {plant.categoryLabel.split('(')[0]}
-                    </div>
-                    <div className="absolute bottom-3 right-3 bg-emerald-950/95 text-white text-xs font-bold px-2.5 py-1 rounded-lg backdrop-blur-xs" dir="rtl">
-                      {plant.urduName}
-                    </div>
-                    {plant.survivalRate && (
-                      <div className="absolute top-3 right-3 bg-emerald-600/90 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow-xs">
-                        {plant.survivalRate}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Body Content */}
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div>
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 
-                          onClick={() => onSelectPlant(plant)}
-                          className="font-extrabold text-lg text-slate-900 group-hover:text-emerald-700 transition-colors cursor-pointer"
-                        >
-                          {plant.name}
-                        </h3>
-                      </div>
-                      
-                      {plant.scientificName && (
-                        <div className="text-xs text-slate-400 italic mt-0.5">
-                          {plant.scientificName}
-                        </div>
-                      )}
-
-                      <p className="text-xs text-slate-600 mt-2 line-clamp-2 leading-relaxed">
-                        {plant.shortDescription}
-                      </p>
-                    </div>
-
-                    {/* Quick Specs Badges */}
-                    <div className="grid grid-cols-2 gap-2 text-xs bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100/60">
-                      <div className="flex items-center gap-1.5 text-slate-700">
-                        <Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span className="truncate">{plant.fruitingTime}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-slate-700">
-                        <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                        <span className="truncate">{plant.heightOrAge}</span>
-                      </div>
-                    </div>
-
-                    {/* Pricing Display */}
-                    <div className="pt-2 border-t border-slate-100 flex items-baseline justify-between">
-                      <div>
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-2xl font-black text-emerald-900">
-                            {plant.formattedPrice}
-                          </span>
-                          <span className="text-xs text-slate-400 font-medium">
-                            {plant.unit}
-                          </span>
-                        </div>
-                        {plant.bulkPrice && (
-                          <div className="text-[11px] font-bold text-emerald-700 mt-0.5">
-                            Bulk: {plant.bulkPrice}
-                          </div>
-                        )}
-                      </div>
-
-                      {plant.originalPrice && (
-                        <div className="text-xs text-slate-400 line-through">
-                          {plant.originalPrice}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => onSelectPlant(plant)}
-                        className="w-full inline-flex items-center justify-center gap-1 text-xs font-bold py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-xs cursor-pointer"
-                      >
-                        <span>View Details</span>
-                      </button>
-
-                      <a
-                        href={whatsAppUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-1 text-xs font-bold py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-xs cursor-pointer"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5" />
-                        <span>WhatsApp Order</span>
-                      </a>
-                    </div>
-
-                  </div>
-                </div>
-              );
-            })}
+            {filteredPlants.map((plant) => (
+              <PlantCatalogCard
+                key={plant.id}
+                plant={plant}
+                onSelectPlant={onSelectPlant}
+              />
+            ))}
           </div>
         )}
 

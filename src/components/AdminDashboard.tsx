@@ -116,6 +116,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     loadAllData();
   }, []);
 
+  useEffect(() => {
+    if (teamMembers !== undefined) {
+      setTeam(teamMembers);
+    }
+  }, [teamMembers]);
+
   const checkConnection = async () => {
     setTestingConnection(true);
     const res = await testSupabaseConnection();
@@ -140,7 +146,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       setOrders(ords);
       setPages(pgs);
       setMediaList(media);
-      if (teamData && teamData.length > 0) {
+      if (Array.isArray(teamData)) {
         setTeam(teamData);
         onTeamUpdated?.(teamData);
       }

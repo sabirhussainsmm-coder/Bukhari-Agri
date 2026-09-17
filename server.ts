@@ -16,6 +16,7 @@ interface BackendDatabase {
   siteSettings: SiteSettings;
   brands: PartnerBrand[];
   products: Product[];
+  team: TeamMember[];
 }
 
 // Load database from file or initialize with defaults
@@ -23,7 +24,14 @@ function loadDatabase(): BackendDatabase {
   try {
     if (fs.existsSync(DB_PATH)) {
       const raw = fs.readFileSync(DB_PATH, 'utf-8');
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.team)) {
+        parsed.team = [];
+      }
+      if (!parsed.siteSettings.address) {
+        parsed.siteSettings.address = "Head Office & Regional Distribution Hub, Jhangi Syedan, Islamabad, Pakistan";
+      }
+      return parsed;
     }
   } catch (err) {
     console.error("[Bukhari Agro Server] Error reading backendDb.json, falling back:", err);
@@ -51,12 +59,14 @@ function loadDatabase(): BackendDatabase {
       helplinePhone: "+92 311 6666600",
       whatsappNumber: "+92 311 6666600",
       email: "bukhariagropvtltd@gmail.com",
+      address: "Head Office & Regional Distribution Hub, Jhangi Syedan, Islamabad, Pakistan",
       ctaButtonText: "bukhariagro.com",
       ctaButtonAction: "contact",
       ctaCustomUrl: ""
     },
     brands: [],
-    products: []
+    products: [],
+    team: []
   };
 }
 
@@ -70,9 +80,6 @@ function saveDatabase() {
     console.error("[Bukhari Agro Server] Failed to save backendDb.json:", err);
   }
 }
-
-// Backend-managed team state
-let serverTeamStore: TeamMember[] = [...initialTeamMembers];
 
 // Store received inquiries
 interface ServerInquiry extends InquiryFormPayload {
@@ -95,7 +102,14 @@ async function startServer() {
   if (!fs.existsSync(publicImagesDir)) {
     fs.mkdirSync(publicImagesDir, { recursive: true });
   }
-  app.use('/images', express.static(publicImagesDir));
+  app.use('/images', express.static(publicImagesDir, {
+    etag: true,
+    lastModified: true,
+    setHeaders: (res) => {
+      // Prevent stale browser caching when images are updated
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }));
 
   // Admin Passcode Authentication Endpoint (Strictly protected, no hints)
   app.post('/api/admin/login', (req, res) => {
@@ -356,10 +370,20 @@ async function startServer() {
       const matches = base64Data.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
       const buffer = Buffer.from(matches ? matches[2] : base64Data, 'base64');
 
-      const ext = matches ? (matches[1].split('/')[1] === 'jpeg' ? 'jpg' : matches[1].split('/')[1]) : 'png';
-      const safeName = filename 
-        ? `${filename.replace(/[^a-zA-Z0-9_-]/g, '_')}.${ext}`
-        : `${prefix}_${Date.now()}.${ext}`;
+      let ext = 'png';
+      if (matches && matches[1]) {
+        const mime = matches[1].toLowerCase();
+        if (mime.includes('jpeg') || mime.includes('jpg')) ext = 'jpg';
+        else if (mime.includes('png')) ext = 'png';
+        else if (mime.includes('webp')) ext = 'webp';
+        else if (mime.includes('svg')) ext = 'svg';
+      } else if (filename && filename.includes('.')) {
+        ext = filename.split('.').pop() || 'jpg';
+      }
+
+      const timestamp = Date.now();
+      const rawBase = filename ? filename.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') : `${prefix}_${timestamp}`;
+      const safeName = `${prefix}_${rawBase}_${timestamp}.${ext}`;
 
       const uploadDir = path.join(__dirname, 'public', 'images');
       if (!fs.existsSync(uploadDir)) {
@@ -370,12 +394,13 @@ async function startServer() {
       fs.writeFileSync(filePath, buffer);
 
       const publicUrl = `/images/${safeName}`;
-      console.log(`[Bukhari Agro Server] New image uploaded: ${publicUrl}`);
+      console.log(`[Bukhari Agro Server] New image uploaded and saved: ${publicUrl}`);
 
       res.json({
         success: true,
         message: "Image uploaded and stored successfully.",
         url: publicUrl,
+        file: { url: publicUrl },
         filename: safeName
       });
     } catch (err) {
@@ -387,6 +412,7 @@ async function startServer() {
   // Get list of available image assets
   app.get('/api/images', (req, res) => {
     try {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       const imgDir = path.join(__dirname, 'public', 'images');
       if (!fs.existsSync(imgDir)) {
         return res.json({ success: true, images: [] });
@@ -421,11 +447,16 @@ async function startServer() {
     }
   });
 
-  // 5. Team API (Controlled centrally from backend and CMS)
+  // 5. Team API (Controlled centrally from backend and CMS with disk persistence)
   app.get('/api/team', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    if (!Array.isArray(db.team)) {
+      db.team = [];
+      saveDatabase();
+    }
     res.json({
       success: true,
-      data: serverTeamStore,
+      data: db.team,
       backendManagedNotice: "Team members and imagery are controlled centrally via Bukhari Agro backend infrastructure."
     });
   });
@@ -445,7 +476,9 @@ async function startServer() {
         specialty: member.specialty || '',
         email: member.email || 'bukhariagropvtltd@gmail.com'
       };
-      serverTeamStore.push(newMember);
+      if (!Array.isArray(db.team)) db.team = [];
+      db.team.push(newMember);
+      saveDatabase();
       res.status(201).json({ success: true, data: newMember });
     } catch (err) {
       res.status(500).json({ success: false, error: 'Failed to add team member' });
@@ -454,18 +487,28 @@ async function startServer() {
 
   app.put('/api/team/:id', (req, res) => {
     const { id } = req.params;
-    const index = serverTeamStore.findIndex(m => m.id === id);
+    if (!Array.isArray(db.team)) db.team = [];
+    const index = db.team.findIndex(m => m.id === id);
     if (index === -1) {
       return res.status(404).json({ success: false, error: 'Member not found' });
     }
-    serverTeamStore[index] = { ...serverTeamStore[index], ...req.body, id };
-    res.json({ success: true, data: serverTeamStore[index] });
+    db.team[index] = { ...db.team[index], ...req.body, id };
+    saveDatabase();
+    res.json({ success: true, data: db.team[index] });
   });
 
   app.delete('/api/team/:id', (req, res) => {
     const { id } = req.params;
-    serverTeamStore = serverTeamStore.filter(m => m.id !== id);
-    res.json({ success: true, message: 'Member deleted' });
+    if (!Array.isArray(db.team)) db.team = [];
+    db.team = db.team.filter(m => m.id !== id);
+    saveDatabase();
+    res.json({ success: true, message: 'Member deleted', remainingCount: db.team.length });
+  });
+
+  app.delete('/api/team', (req, res) => {
+    db.team = [];
+    saveDatabase();
+    res.json({ success: true, message: 'All team members cleared' });
   });
 
   // 6. Categories API

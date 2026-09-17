@@ -73,7 +73,7 @@ export default function App() {
   });
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [brands, setBrands] = useState<PartnerBrand[]>(partnerBrands);
-  const [team, setTeam] = useState<TeamMember[]>(initialTeamMembers);
+  const [team, setTeam] = useState<TeamMember[]>([]);
   const [plants, setPlants] = useState<PlantItem[]>(initialPlants);
   const [agriMachines, setAgriMachines] = useState<AgriMachine[]>(initialAgriMachines);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
@@ -237,11 +237,11 @@ export default function App() {
     async function loadTeam() {
       try {
         const dbTeam = await fetchTeamFromDb();
-        if (dbTeam && dbTeam.length > 0 && isMounted) {
+        if (Array.isArray(dbTeam) && isMounted) {
           setTeam(dbTeam);
           return;
         }
-        const res = await fetch('/api/team');
+        const res = await fetch(`/api/team?_t=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const json = await res.json();
           if (json.success && Array.isArray(json.data) && isMounted) {
@@ -249,7 +249,7 @@ export default function App() {
           }
         }
       } catch (err) {
-        console.warn("Using default team dataset", err);
+        console.warn("Error loading team dataset", err);
       }
     }
 
