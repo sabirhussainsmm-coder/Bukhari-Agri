@@ -720,7 +720,7 @@ export async function deleteBrandFromDb(id: string): Promise<{ success: boolean;
 export async function fetchTeamFromDb(): Promise<TeamMember[]> {
   const client = getSupabaseClient();
 
-  // Try Supabase first
+  // 1. Try Supabase team_members table first
   if (client) {
     try {
       const { data, error } = await client
@@ -728,8 +728,8 @@ export async function fetchTeamFromDb(): Promise<TeamMember[]> {
         .select('*')
         .order('sort_order', { ascending: true });
 
-      if (!error && Array.isArray(data)) {
-        return data.map((m: any) => ({
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const mapped = data.map((m: any) => ({
           id: m.id || m.member_key,
           name: m.name || 'Team Member',
           role: m.role || 'Agronomist',
@@ -737,22 +737,45 @@ export async function fetchTeamFromDb(): Promise<TeamMember[]> {
           qualification: m.qualification || '',
           experience: m.experience || '',
           bio: m.bio || '',
-          imageUrl: m.image_url || '/images/team-agronomist.jpg',
+          imageUrl: m.image_url || '/images/team-director.jpg',
           specialty: m.specialty || 'Crop Protection & Advisory',
           email: m.email || 'bukhariagropvtltd@gmail.com'
         }));
+        try {
+          localStorage.setItem('bukhari_team_members', JSON.stringify(mapped));
+          localStorage.setItem('bukhari_team_fetched', 'true');
+        } catch {}
+        return mapped;
+      }
+
+      // If team_members table is empty or errored, check fallback custom_pages storage
+      const { data: pageBackup } = await client
+        .from('custom_pages')
+        .select('content')
+        .eq('slug', 'site-team-data')
+        .maybeSingle();
+
+      if (pageBackup?.content) {
+        const parsedBackup = JSON.parse(pageBackup.content);
+        if (Array.isArray(parsedBackup) && parsedBackup.length > 0) {
+          try {
+            localStorage.setItem('bukhari_team_members', JSON.stringify(parsedBackup));
+            localStorage.setItem('bukhari_team_fetched', 'true');
+          } catch {}
+          return parsedBackup;
+        }
       }
     } catch (err) {
       console.warn('[Fetch team from Supabase error]:', err);
     }
   }
 
-  // Fallback to Express backend /api/team
+  // 2. Fallback to Express backend /api/team
   try {
     const res = await fetch(`/api/team?_t=${Date.now()}`, { cache: 'no-store' });
     if (res.ok) {
       const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
         try {
           localStorage.setItem('bukhari_team_members', JSON.stringify(json.data));
           localStorage.setItem('bukhari_team_fetched', 'true');
@@ -764,20 +787,35 @@ export async function fetchTeamFromDb(): Promise<TeamMember[]> {
     console.warn('[Fetch team from /api/team error]:', err);
   }
 
-  // Fallback to localStorage
+  // 3. Fallback to localStorage (do not require bukhari_team_fetched flag)
   try {
     const cached = localStorage.getItem('bukhari_team_members');
-    const fetched = localStorage.getItem('bukhari_team_fetched');
-    if (cached && fetched) {
+    if (cached) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed)) {
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Ensure Abuzar BOKHARI is included if missing in previous cache
+        const hasAbuzar = parsed.some((m: any) => m.id === 'abuzar-bokhari' || (m.name && m.name.toLowerCase().includes('abuzar')));
+        if (!hasAbuzar) {
+          const abuzar = initialTeamMembers.find(m => m.id === 'abuzar-bokhari');
+          if (abuzar) {
+            parsed.unshift(abuzar);
+          }
+        }
+        // Ensure Sabir Hussain has his designated portrait photo
+        const sabir = parsed.find((m: any) => m.id === 'sabir-hussain' || (m.name && m.name.toLowerCase().includes('sabir')));
+        if (sabir && (sabir.imageUrl === '/images/team-director.jpg' || !sabir.imageUrl)) {
+          sabir.imageUrl = '/images/sabir-hussain.jpg';
+        }
+        try {
+          localStorage.setItem('bukhari_team_members', JSON.stringify(parsed));
+        } catch {}
         return parsed;
       }
     }
   } catch {}
 
-  // If no backend team configured or user cleared all, return empty array
-  return [];
+  // 4. Default to initialTeamMembers (Sabir Hussain)
+  return initialTeamMembers;
 }
 
 export async function saveTeamMemberToDb(
@@ -786,20 +824,34 @@ export async function saveTeamMemberToDb(
 ): Promise<{ success: boolean; data?: TeamMember; error?: string }> {
   const client = getSupabaseClient();
 
+  const memberId = isEditingId || member.id || `team-${Date.now()}`;
+  const completeMember: TeamMember = {
+    id: memberId,
+    name: member.name || 'Sabir Hussain',
+    role: member.role || 'Managing Director & Executive Head',
+    department: member.department || 'Executive Leadership & Field Operations',
+    qualification: member.qualification || 'Agricultural & Agribusiness Specialist',
+    experience: member.experience || '15+ Years Experience',
+    bio: member.bio || 'Dedicated to bringing authentic agrochemical formulations and field advisory to farmers across Pakistan.',
+    imageUrl: member.imageUrl || '/images/team-director.jpg',
+    specialty: member.specialty || 'Agrochemical Procurement, Quality Assurance & Farmer Advisory',
+    email: member.email || 'bukhariagropvtltd@gmail.com'
+  };
+
   const payload = {
-    name: member.name,
-    role: member.role,
-    department: member.department || 'Agronomy & Advisory',
-    qualification: member.qualification || '',
-    experience: member.experience || '',
-    bio: member.bio || '',
-    image_url: member.imageUrl || '/images/team-agronomist.jpg',
-    specialty: member.specialty || 'Crop Care & Agronomic Solutions',
-    email: member.email || 'bukhariagropvtltd@gmail.com',
+    name: completeMember.name,
+    role: completeMember.role,
+    department: completeMember.department,
+    qualification: completeMember.qualification,
+    experience: completeMember.experience,
+    bio: completeMember.bio,
+    image_url: completeMember.imageUrl,
+    specialty: completeMember.specialty,
+    email: completeMember.email,
     updated_at: new Date().toISOString()
   };
 
-  let savedMember: TeamMember | null = null;
+  let savedMember: TeamMember = completeMember;
 
   // 1. Save to Supabase if connected
   if (client) {
@@ -867,44 +919,59 @@ export async function saveTeamMemberToDb(
       await fetch(`/api/team/${isEditingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(member)
+        body: JSON.stringify(completeMember)
       });
     } else {
       await fetch('/api/team', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(member)
+        body: JSON.stringify(completeMember)
       });
     }
   } catch (err) {
     console.warn('[Sync to /api/team error]:', err);
   }
 
-  // 3. Cache to localStorage
+  // 3. Cache to localStorage and update fallback custom_pages in Supabase
   try {
-    const currentTeam = await fetchTeamFromDb();
+    let currentTeam = await fetchTeamFromDb();
     let updatedTeam: TeamMember[];
     if (isEditingId) {
-      updatedTeam = currentTeam.map(m => m.id === isEditingId ? { ...m, ...member } as TeamMember : m);
+      updatedTeam = currentTeam.map(m => m.id === isEditingId ? { ...m, ...completeMember } : m);
     } else {
-      const newMember: TeamMember = savedMember || {
-        id: member.id || `member-${Date.now()}`,
-        name: member.name || 'New Member',
-        role: member.role || 'Agronomist',
-        department: member.department || 'Technical Division',
-        qualification: member.qualification || '',
-        experience: member.experience || '',
-        bio: member.bio || '',
-        imageUrl: member.imageUrl || '/images/team-agronomist.jpg',
-        specialty: member.specialty || '',
-        email: member.email || 'bukhariagropvtltd@gmail.com'
-      };
-      updatedTeam = [...currentTeam, newMember];
+      // Avoid duplicate by id or name
+      const exists = currentTeam.some(m => m.id === completeMember.id || m.name.toLowerCase() === completeMember.name.toLowerCase());
+      if (exists) {
+        updatedTeam = currentTeam.map(m => m.name.toLowerCase() === completeMember.name.toLowerCase() ? { ...m, ...completeMember } : m);
+      } else {
+        updatedTeam = [...currentTeam, completeMember];
+      }
     }
+
     localStorage.setItem('bukhari_team_members', JSON.stringify(updatedTeam));
-    return { success: true, data: savedMember || undefined };
+    localStorage.setItem('bukhari_team_fetched', 'true');
+
+    // Also persist full list to Supabase custom_pages table as resilient universal backup
+    if (client) {
+      try {
+        await client.from('custom_pages').upsert({
+          slug: 'site-team-data',
+          title: 'Site Team Data Backup',
+          content: JSON.stringify(updatedTeam),
+          is_published: false,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'slug' });
+      } catch {}
+    }
+
+    // Broadcast change to other components/tabs
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('bukhari_team_updated', { detail: updatedTeam }));
+    }
+
+    return { success: true, data: savedMember };
   } catch (err: any) {
-    return { success: true };
+    return { success: true, data: savedMember };
   }
 }
 
@@ -926,17 +993,32 @@ export async function deleteTeamMemberFromDb(id: string): Promise<{ success: boo
   }
 
   try {
+    let updated: TeamMember[] = [];
     const cached = localStorage.getItem('bukhari_team_members');
     if (cached) {
       const parsed = JSON.parse(cached);
       if (Array.isArray(parsed)) {
-        const updated = parsed.filter((m: any) => m.id !== id);
-        localStorage.setItem('bukhari_team_members', JSON.stringify(updated));
-        localStorage.setItem('bukhari_team_fetched', 'true');
+        updated = parsed.filter((m: any) => m.id !== id);
       }
-    } else {
-      localStorage.setItem('bukhari_team_members', JSON.stringify([]));
-      localStorage.setItem('bukhari_team_fetched', 'true');
+    }
+
+    localStorage.setItem('bukhari_team_members', JSON.stringify(updated));
+    localStorage.setItem('bukhari_team_fetched', 'true');
+
+    if (client) {
+      try {
+        await client.from('custom_pages').upsert({
+          slug: 'site-team-data',
+          title: 'Site Team Data Backup',
+          content: JSON.stringify(updated),
+          is_published: false,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'slug' });
+      } catch {}
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('bukhari_team_updated', { detail: updated }));
     }
   } catch {}
 

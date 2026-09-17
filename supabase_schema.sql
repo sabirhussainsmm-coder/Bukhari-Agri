@@ -407,51 +407,36 @@ ON CONFLICT (slug) DO NOTHING;
 INSERT INTO public.team_members (member_key, name, role, department, qualification, experience, bio, image_url, specialty, sort_order)
 VALUES
 (
-  'syed-bukhari',
-  'Syed Bukhari',
-  'Managing Director & Founder',
+  'abuzar-bokhari',
+  'Abuzar BOKHARI',
+  'MD',
   'Executive Leadership',
-  'M.Sc. Agribusiness & Rural Economy',
-  '18+ Years Experience in Agrochemical Supply Chains',
-  'Visionary agribusiness leader dedicated to connecting Punjab and Sindh farmers with authentic, unadulterated crop protection from the world''s most reputable manufacturers.',
+  'Agribusiness Strategy & Executive Operations',
+  'Corporate Leadership & Agricultural Alliances',
+  'Managing Director leading corporate direction, strategic manufacturer partnerships, and premium agrochemical distribution for Bukhari Agro (Pvt) Ltd across Pakistan.',
   '/images/team-director.jpg',
-  'Agri-Enterprise Strategy, Multi-Brand Procurement & Farmer Alliances',
+  'Executive Management, Agrochemical Alliances & Market Growth',
   1
 ),
 (
-  'dr-tariq-mahmood',
-  'Dr. Tariq Mahmood',
-  'Chief Agronomist & Technical Director',
-  'Research & Agronomic Advisory',
-  'Ph.D. in Plant Pathology & Crop Protection',
-  '15+ Years in Field Diagnostics & Resistance Management',
-  'Specializes in fungal epidemiology, pest life-cycle forecasting, and calibrated tank-mix optimization for cotton, wheat, and citrus orchards.',
-  '/images/team-agronomist.jpg',
-  'Crop Diagnostics, Tank-Mix Chemistry & Integrated Pest Management (IPM)',
+  'sabir-hussain',
+  'Sabir Hussain',
+  'Executive Head & Agribusiness Specialist',
+  'Executive Leadership & Field Operations',
+  'Agricultural & Agribusiness Specialist',
+  '15+ Years in Agrochemicals & Crop Health Solutions',
+  'Visionary agribusiness leader guiding Bukhari Agro (Pvt) Ltd with a mission to deliver authentic, high-efficacy crop protection, balanced plant nutrition, and expert farm advisory to farmers across Pakistan.',
+  '/images/sabir-hussain.jpg',
+  'Agrochemical Procurement, Quality Assurance & Farmer Advisory',
   2
-),
-(
-  'engr-muhammad-imran',
-  'Engr. Muhammad Imran',
-  'Head of Supply Chain & Quality Assurance',
-  'Logistics & Regulatory Compliance',
-  'B.Sc. Chemical Engineering, MBA Operations',
-  '12+ Years Multi-brand Warehousing & Quality Verification',
-  'Ensures that every pesticide bottle and fertilizer batch distributed through Bukhari Agro maintains strict batch certification, optimum storage temperature, and genuine tamper-evident sealing.',
-  '/images/team-director.jpg',
-  'Cold Chain Storage, Batch Traceability & Anti-Counterfeit Auditing',
-  3
-),
-(
-  'ch-usman-rafiq',
-  'Ch. Usman Rafiq',
-  'Senior Regional Field Agronomist',
-  'Field Extension & Farmer Outreach',
-  'B.Sc. (Hons) Agronomy, UAF',
-  '10+ Years On-Farm Consultations',
-  'Conducts weekly field seminars, soil sample assessments, and on-farm demonstrations helping progressive and smallholder growers maximize harvest tonnage.',
-  '/images/team-agronomist.jpg',
-  'Wheat Weed Control, Cotton Pink Bollworm Mitigation & Drip Fertigation',
-  4
 )
-ON CONFLICT (member_key) DO NOTHING;
+ON CONFLICT (member_key) DO UPDATE
+SET name = EXCLUDED.name,
+    role = EXCLUDED.role,
+    department = EXCLUDED.department,
+    qualification = EXCLUDED.qualification,
+    experience = EXCLUDED.experience,
+    bio = EXCLUDED.bio,
+    image_url = EXCLUDED.image_url,
+    specialty = EXCLUDED.specialty,
+    sort_order = EXCLUDED.sort_order;

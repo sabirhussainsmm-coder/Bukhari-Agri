@@ -146,7 +146,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       setOrders(ords);
       setPages(pgs);
       setMediaList(media);
-      if (Array.isArray(teamData)) {
+      if (Array.isArray(teamData) && teamData.length > 0) {
         setTeam(teamData);
         onTeamUpdated?.(teamData);
       }

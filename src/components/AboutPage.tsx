@@ -28,11 +28,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({
   onNavigateToContact,
   teamMembers
 }) => {
-  const [team, setTeam] = useState<TeamMember[]>(teamMembers ?? []);
+  const [team, setTeam] = useState<TeamMember[]>(
+    teamMembers && teamMembers.length > 0 ? teamMembers : initialTeamMembers
+  );
   const [loadingTeam, setLoadingTeam] = useState(false);
 
   useEffect(() => {
-    if (teamMembers !== undefined) {
+    if (teamMembers && teamMembers.length > 0) {
       setTeam(teamMembers);
     }
   }, [teamMembers]);
@@ -44,7 +46,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
       setLoadingTeam(true);
       try {
         const data = await fetchTeamFromDb();
-        if (isMounted && Array.isArray(data)) {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
           setTeam(data);
         }
       } catch (err) {
@@ -55,7 +57,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({
     }
 
     loadBackendTeam();
-    return () => { isMounted = false; };
+
+    // Listen for live update event from Admin Panel
+    const handleTeamUpdate = (e: any) => {
+      if (Array.isArray(e.detail) && e.detail.length > 0) {
+        setTeam(e.detail);
+      }
+    };
+    window.addEventListener('bukhari_team_updated', handleTeamUpdate);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('bukhari_team_updated', handleTeamUpdate);
+    };
   }, []);
 
   return (

@@ -25,8 +25,33 @@ function loadDatabase(): BackendDatabase {
     if (fs.existsSync(DB_PATH)) {
       const raw = fs.readFileSync(DB_PATH, 'utf-8');
       const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed.team)) {
-        parsed.team = [];
+      if (!Array.isArray(parsed.team) || parsed.team.length === 0) {
+        parsed.team = [
+          {
+            id: "abuzar-bokhari",
+            name: "Abuzar BOKHARI",
+            role: "MD",
+            department: "Executive Leadership",
+            qualification: "Agribusiness Strategy & Executive Operations",
+            experience: "Corporate Leadership & Agricultural Alliances",
+            bio: "Managing Director leading corporate direction, strategic manufacturer partnerships, and premium agrochemical distribution for Bukhari Agro (Pvt) Ltd across Pakistan.",
+            imageUrl: "/images/team-director.jpg",
+            specialty: "Executive Management, Agrochemical Alliances & Market Growth",
+            email: "bukhariagropvtltd@gmail.com"
+          },
+          {
+            id: "sabir-hussain",
+            name: "Sabir Hussain",
+            role: "Executive Head & Agribusiness Specialist",
+            department: "Executive Leadership & Field Operations",
+            qualification: "Agricultural & Agribusiness Specialist",
+            experience: "15+ Years in Agrochemicals & Crop Health Solutions",
+            bio: "Visionary agribusiness leader guiding Bukhari Agro (Pvt) Ltd with a mission to deliver authentic, high-efficacy crop protection, balanced plant nutrition, and expert farm advisory to farmers across Pakistan.",
+            imageUrl: "/images/sabir-hussain.jpg",
+            specialty: "Agrochemical Procurement, Quality Assurance & Farmer Advisory",
+            email: "bukhariagropvtltd@gmail.com"
+          }
+        ];
       }
       if (!parsed.siteSettings.address) {
         parsed.siteSettings.address = "Head Office & Regional Distribution Hub, Jhangi Syedan, Islamabad, Pakistan";
@@ -66,7 +91,32 @@ function loadDatabase(): BackendDatabase {
     },
     brands: [],
     products: [],
-    team: []
+    team: [
+      {
+        id: "abuzar-bokhari",
+        name: "Abuzar BOKHARI",
+        role: "MD",
+        department: "Executive Leadership",
+        qualification: "Agribusiness Strategy & Executive Operations",
+        experience: "Corporate Leadership & Agricultural Alliances",
+        bio: "Managing Director leading corporate direction, strategic manufacturer partnerships, and premium agrochemical distribution for Bukhari Agro (Pvt) Ltd across Pakistan.",
+        imageUrl: "/images/team-director.jpg",
+        specialty: "Executive Management, Agrochemical Alliances & Market Growth",
+        email: "bukhariagropvtltd@gmail.com"
+      },
+      {
+        id: "sabir-hussain",
+        name: "Sabir Hussain",
+        role: "Executive Head & Agribusiness Specialist",
+        department: "Executive Leadership & Field Operations",
+        qualification: "Agricultural & Agribusiness Specialist",
+        experience: "15+ Years in Agrochemicals & Crop Health Solutions",
+        bio: "Visionary agribusiness leader guiding Bukhari Agro (Pvt) Ltd with a mission to deliver authentic, high-efficacy crop protection, balanced plant nutrition, and expert farm advisory to farmers across Pakistan.",
+        imageUrl: "/images/sabir-hussain.jpg",
+        specialty: "Agrochemical Procurement, Quality Assurance & Farmer Advisory",
+        email: "bukhariagropvtltd@gmail.com"
+      }
+    ]
   };
 }
 

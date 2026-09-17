@@ -73,7 +73,7 @@ export default function App() {
   });
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [brands, setBrands] = useState<PartnerBrand[]>(partnerBrands);
-  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [team, setTeam] = useState<TeamMember[]>(initialTeamMembers);
   const [plants, setPlants] = useState<PlantItem[]>(initialPlants);
   const [agriMachines, setAgriMachines] = useState<AgriMachine[]>(initialAgriMachines);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
@@ -237,16 +237,9 @@ export default function App() {
     async function loadTeam() {
       try {
         const dbTeam = await fetchTeamFromDb();
-        if (Array.isArray(dbTeam) && isMounted) {
+        if (Array.isArray(dbTeam) && dbTeam.length > 0 && isMounted) {
           setTeam(dbTeam);
           return;
-        }
-        const res = await fetch(`/api/team?_t=${Date.now()}`, { cache: 'no-store' });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && Array.isArray(json.data) && isMounted) {
-            setTeam(json.data);
-          }
         }
       } catch (err) {
         console.warn("Error loading team dataset", err);
@@ -258,7 +251,17 @@ export default function App() {
     loadBrands();
     loadTeam();
 
-    return () => { isMounted = false; };
+    const handleTeamUpdate = (e: any) => {
+      if (Array.isArray(e.detail) && e.detail.length > 0 && isMounted) {
+        setTeam(e.detail);
+      }
+    };
+    window.addEventListener('bukhari_team_updated', handleTeamUpdate);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('bukhari_team_updated', handleTeamUpdate);
+    };
   }, []);
 
   // Monitor scroll for scroll-to-top button

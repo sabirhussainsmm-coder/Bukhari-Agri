@@ -85,51 +85,27 @@ export const partnerBrands: PartnerBrand[] = [
 
 export const initialTeamMembers: TeamMember[] = [
   {
-    id: "syed-bukhari",
-    name: "Syed Bukhari",
-    role: "Managing Director & Founder",
+    id: "abuzar-bokhari",
+    name: "Abuzar BOKHARI",
+    role: "MD",
     department: "Executive Leadership",
-    qualification: "M.Sc. Agribusiness & Rural Economy",
-    experience: "18+ Years Experience in Agrochemical Supply Chains",
-    bio: "Visionary agribusiness leader dedicated to connecting Punjab and Sindh farmers with authentic, unadulterated crop protection from the world's most reputable manufacturers.",
+    qualification: "Agribusiness Strategy & Executive Operations",
+    experience: "Corporate Leadership & Agricultural Alliances",
+    bio: "Managing Director leading corporate direction, strategic manufacturer partnerships, and premium agrochemical distribution for Bukhari Agro (Pvt) Ltd across Pakistan.",
     imageUrl: "/images/team-director.jpg",
-    specialty: "Agri-Enterprise Strategy, Multi-Brand Procurement & Farmer Alliances",
+    specialty: "Executive Management, Agrochemical Alliances & Market Growth",
     email: "bukhariagropvtltd@gmail.com"
   },
   {
-    id: "dr-tariq-mahmood",
-    name: "Dr. Tariq Mahmood",
-    role: "Chief Agronomist & Technical Director",
-    department: "Research & Agronomic Advisory",
-    qualification: "Ph.D. in Plant Pathology & Crop Protection",
-    experience: "15+ Years in Field Diagnostics & Resistance Management",
-    bio: "Specializes in fungal epidemiology, pest life-cycle forecasting, and calibrated tank-mix optimization for cotton, wheat, and citrus orchards.",
-    imageUrl: "/images/team-agronomist.jpg",
-    specialty: "Crop Diagnostics, Tank-Mix Chemistry & Integrated Pest Management (IPM)",
-    email: "bukhariagropvtltd@gmail.com"
-  },
-  {
-    id: "engr-muhammad-imran",
-    name: "Engr. Muhammad Imran",
-    role: "Head of Supply Chain & Quality Assurance",
-    department: "Logistics & Regulatory Compliance",
-    qualification: "B.Sc. Chemical Engineering, MBA Operations",
-    experience: "12+ Years Multi-brand Warehousing & Quality Verification",
-    bio: "Ensures that every pesticide bottle and fertilizer batch distributed through Bukhari Agro maintains strict batch certification, optimum storage temperature, and genuine tamper-evident sealing.",
-    imageUrl: "/images/team-director.jpg",
-    specialty: "Cold Chain Storage, Batch Traceability & Anti-Counterfeit Auditing",
-    email: "bukhariagropvtltd@gmail.com"
-  },
-  {
-    id: "ch-usman-rafiq",
-    name: "Ch. Usman Rafiq",
-    role: "Senior Regional Field Agronomist",
-    department: "Field Extension & Farmer Outreach",
-    qualification: "B.Sc. (Hons) Agronomy, UAF",
-    experience: "10+ Years On-Farm Consultations",
-    bio: "Conducts weekly field seminars, soil sample assessments, and on-farm demonstrations helping progressive and smallholder growers maximize harvest tonnage.",
-    imageUrl: "/images/team-agronomist.jpg",
-    specialty: "Wheat Weed Control, Cotton Pink Bollworm Mitigation & Drip Fertigation",
+    id: "sabir-hussain",
+    name: "Sabir Hussain",
+    role: "Executive Head & Agribusiness Specialist",
+    department: "Executive Leadership & Field Operations",
+    qualification: "Agricultural & Agribusiness Specialist",
+    experience: "15+ Years in Agrochemicals & Crop Health Solutions",
+    bio: "Visionary agribusiness leader guiding Bukhari Agro (Pvt) Ltd with a mission to deliver authentic, high-efficacy crop protection, balanced plant nutrition, and expert farm advisory to farmers across Pakistan.",
+    imageUrl: "/images/sabir-hussain.jpg",
+    specialty: "Agrochemical Procurement, Quality Assurance & Farmer Advisory",
     email: "bukhariagropvtltd@gmail.com"
   }
 ];
